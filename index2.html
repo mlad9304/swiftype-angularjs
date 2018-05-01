@@ -55,12 +55,12 @@
                             <div class="facet-header">
                                 <span>Category</span>
                             </div>
-                            <div class="facet-option selected" data-facet-value="all" ng-click="handleClickFacet($event, facetField, 'all')">
+                            <div class="facet-option selected" data-facet-value="all" ng-click="handleClickFacet($event, '_all')">
                                 <span class="facet-label">All</span>
                                 <span class="facet-count"></span>
                             </div>
                             <div ng-repeat="category in categories">
-                                <div class="facet-option" ng-click="handleClickFacet($event, key, doc_count)">
+                                <div class="facet-option" ng-click="handleClickFacet($event, category.key)">
                                     <span class="facet-label">{{category.key}}</span>
                                     <span class="facet-count">{{category.doc_count}}</span>
                                 </div>
@@ -107,41 +107,12 @@
             $scope.query = '';
             $scope.from = 0;
             $scope.size = 10;
-            $scope.categorySize = 10;
+            $scope.categorySize = 5;
 
             $scope.search = () => {
                 console.log($scope.query);
                 if($scope.query === '')
                     return;
-
-const query = {
-    "size": 10,
-    "query":{
-        "bool":{
-            "must":{
-                "query_string" : {
-                    "fields" : ["text"],
-                    "query" : "italy"
-                }
-            },
-            "filter":{
-                "terms":{
-                    "categories.keyword": [
-                        "Living people"
-                    ]
-                }
-            }
-        }
-    },
-    "aggs":{
-        "category":{
-            "terms":{
-                "field":"categories.keyword",
-                "size":5
-            }
-        }
-    }
-}
 
                 $http({
                     method : "POST",
@@ -150,6 +121,8 @@ const query = {
                         'Content-Type': 'application/json'
                     },
                     data: {
+                        "from": $scope.from,
+                        "size": $scope.size,
                         "query": {
                             "bool" : {
                                 "must" : {
@@ -172,8 +145,6 @@ const query = {
                                 
                             }
                         },
-                        "from": $scope.from,
-                        "size": $scope.size,
                     }
                 }).then((response) => {
                     
@@ -214,8 +185,75 @@ const query = {
                 $scope.search();
             }
 
-            $scope.goto = function(page) {
+            $scope.goto = (page) => {
                 console.log("Goto " + page);
+            }
+
+            $scope.handleClickFacet = (event, facetField) => {
+                
+                $scope.from = 0;
+
+                let query = {};
+
+                if(facetField === '_all') {
+                    query = {
+                        "bool":{
+                            "must":{
+                                "query_string" : {
+                                    "fields" : ["text"],
+                                    "query" : $scope.query
+                                }
+                            },
+                        }
+                    }
+                } else {
+                    query = {
+                        "bool":{
+                            "must":{
+                                "query_string" : {
+                                    "fields" : ["text"],
+                                    "query" : $scope.query
+                                }
+                            },
+                            "filter":{
+                                "terms":{
+                                    "categories.keyword": [
+                                        facetField
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+
+                $http({
+                    method : "POST",
+                    url : `https://19d7d779f8a502497d7eed2a5d035771.ap-southeast-2.aws.found.io:9243/wiki/_search`,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    data: {
+                        "from": $scope.from,
+                        "size": $scope.size,
+                        query
+                    }
+                }).then((response) => {
+                    
+                    const searchResult = response.data;
+                    const { hits, total } = searchResult.hits;
+
+                    $scope.hits = hits;
+                    $scope.total = total;
+
+                    $scope.isNotEmptyRecords = $scope.total > 0;
+                    $scope.page_row_count_summary = ($scope.from + 1) + '-' + ($scope.from + $scope.hits.length);
+                    $scope.isInvalidPrevPage = $scope.from <= 0;
+                    $scope.isInvalidNextPage = ($scope.from + $scope.hits.length) >= $scope.total;
+
+                },(error) => {
+                    console.log(error.statusText);
+                });
+
             }
             
         });

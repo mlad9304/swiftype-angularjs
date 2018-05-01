@@ -201,7 +201,7 @@
                 $scope.search($scope.query, $scope.page, $scope.facetField, $scope.facetValue, false);
             }
 
-            $scope.goto = function(page) {
+            $scope.goto = (page) => {
                 console.log("Goto " + page);
             }
             
