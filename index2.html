@@ -114,6 +114,35 @@
                 if($scope.query === '')
                     return;
 
+const query = {
+    "size": 10,
+    "query":{
+        "bool":{
+            "must":{
+                "query_string" : {
+                    "fields" : ["text"],
+                    "query" : "italy"
+                }
+            },
+            "filter":{
+                "terms":{
+                    "categories.keyword": [
+                        "Living people"
+                    ]
+                }
+            }
+        }
+    },
+    "aggs":{
+        "category":{
+            "terms":{
+                "field":"categories.keyword",
+                "size":5
+            }
+        }
+    }
+}
+
                 $http({
                     method : "POST",
                     url : `https://19d7d779f8a502497d7eed2a5d035771.ap-southeast-2.aws.found.io:9243/wiki/_search`,
@@ -125,6 +154,7 @@
                             "bool" : {
                                 "must" : {
                                     "query_string" : {
+                                        "fields" : ["text"],
                                         "query" : $scope.query
                                     }
                                 },
