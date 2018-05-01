@@ -75,6 +75,7 @@
                         <div class="results">
                             <div ng-if="isNotEmptyRecords" class="search-summary">
                                 Showing results <strong ng-bind="page_row_count_summary"></strong> of <strong ng-bind="total_result_count"></strong> for <em ng-bind="query"></em>
+                                <span class="filter-label" ng-if="isFacetFilter"><strong>{{selectedFacetField}}:</strong> {{selectedFacetValue}}</span>
                             </div>
                             <div ng-repeat="record in records" class="result">
                                 <div>
@@ -124,6 +125,8 @@
             $scope.facetField = '';
             $scope.facetValue = '';
 
+            $scope.isFacetFilter = false;
+
             $scope.search = (query, page, facetField, facetValue, isReplaceReturnedFacets=true) => {
                 if(query === '')
                     return;
@@ -167,7 +170,7 @@
                     $scope.isInvalidPrevPage = $scope.page === 1;
                     $scope.isInvalidNextPage = $scope.page === num_pages;
 
-                    // console.log(searchResult);
+                    
                 });
             }
 
@@ -199,6 +202,14 @@
                 $scope.facetValue = facetValue;
                 $scope.page = 1;
                 $scope.search($scope.query, $scope.page, $scope.facetField, $scope.facetValue, false);
+
+                if(facetValue === 'all') {
+                    $scope.isFacetFilter = false;
+                } else {
+                    $scope.isFacetFilter = true;
+                    $scope.selectedFacetField = facetField;
+                    $scope.selectedFacetValue = facetValue;
+                }
             }
 
             $scope.goto = (page) => {

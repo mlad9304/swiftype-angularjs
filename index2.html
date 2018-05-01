@@ -71,6 +71,7 @@
                         <div class="results">
                             <div ng-if="isNotEmptyRecords" class="search-summary">
                                 Showing results <strong ng-bind="page_row_count_summary"></strong> of <strong ng-bind="total"></strong> for <em ng-bind="query"></em>
+                                <span class="filter-label" ng-if="isFacetFilter"><strong>Category:</strong> {{selectedFacetValue}}</span>
                             </div>
                             <div ng-repeat="record in hits" class="result" target="_blank">
                                 <div class="result-title">
@@ -109,10 +110,45 @@
             $scope.size = 10;
             $scope.categorySize = 5;
 
-            $scope.search = () => {
+            $scope.isFacetFilter = false;
+
+            $scope.search = (isReplaceReturnedFacets=true) => {
                 console.log($scope.query);
                 if($scope.query === '')
                     return;
+
+                let query = {};
+                
+                if($scope.isFacetFilter) {
+                    query = {
+                        "bool" : {
+                            "must" : {
+                                "query_string" : {
+                                    "fields" : ["text"],
+                                    "query" : $scope.query
+                                }
+                            },
+                            "filter":{
+                                "terms":{
+                                    "categories.keyword": [
+                                        $scope.selectedFacetValue
+                                    ]
+                                }
+                            }
+                        }
+                    };
+                } else {
+                    query = {
+                        "bool" : {
+                            "must" : {
+                                "query_string" : {
+                                    "fields" : ["text"],
+                                    "query" : $scope.query
+                                }
+                            },
+                        }
+                    };
+                }
 
                 $http({
                     method : "POST",
@@ -123,16 +159,7 @@
                     data: {
                         "from": $scope.from,
                         "size": $scope.size,
-                        "query": {
-                            "bool" : {
-                                "must" : {
-                                    "query_string" : {
-                                        "fields" : ["text"],
-                                        "query" : $scope.query
-                                    }
-                                },
-                            }
-                        },
+                        query,
                         "aggs" : {
                             "index" : {
                                 "terms" : { "field" : "_index" }
@@ -153,9 +180,8 @@
                     const { buckets: categories } = categoryData;
                     const { hits, total } = searchResult.hits;
 
-                    console.log(categories);
-
-                    $scope.categories = categories;
+                    if(isReplaceReturnedFacets)
+                        $scope.categories = categories;
                     $scope.index = index;
                     $scope.hits = hits;
                     $scope.total = total;
@@ -178,18 +204,18 @@
             
             $scope.prevPage = () => {
                 $scope.from -= $scope.size;
-                $scope.search();
+                $scope.search(false);
             }
             $scope.nextPage = () => {
                 $scope.from += $scope.size;
-                $scope.search();
+                $scope.search(false);
             }
 
             $scope.goto = (page) => {
                 console.log("Goto " + page);
             }
 
-            $scope.handleClickFacet = (e, facetField) => {
+            $scope.handleClickFacet = (e, facetValue) => {
 
                 $(e.target).parents(".facets").find('.facet-option').removeClass('selected');
                 let el = angular.element(e.target.parentElement);
@@ -199,7 +225,7 @@
 
                 let query = {};
 
-                if(facetField === '_all') {
+                if(facetValue === '_all') {
                     query = {
                         "bool":{
                             "must":{
@@ -210,6 +236,8 @@
                             },
                         }
                     }
+
+                    $scope.isFacetFilter = false;
                 } else {
                     query = {
                         "bool":{
@@ -222,12 +250,14 @@
                             "filter":{
                                 "terms":{
                                     "categories.keyword": [
-                                        facetField
+                                        facetValue
                                     ]
                                 }
                             }
                         }
                     }
+                    $scope.isFacetFilter = true;
+                    $scope.selectedFacetValue = facetValue;
                 }
 
                 $http({
