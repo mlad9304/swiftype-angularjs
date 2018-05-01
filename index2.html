@@ -180,8 +180,10 @@
                     const { buckets: categories } = categoryData;
                     const { hits, total } = searchResult.hits;
 
-                    if(isReplaceReturnedFacets)
+                    if(isReplaceReturnedFacets) {
                         $scope.categories = categories;
+                        $("div.facet-container").find(".facet-option[data-facet-value='all']").addClass('selected');
+                    }
                     $scope.index = index;
                     $scope.hits = hits;
                     $scope.total = total;
@@ -199,6 +201,7 @@
             
             $scope.handleChangeQuery = () => {
                 $scope.from = 0;
+                $scope.isFacetFilter = false;
                 $scope.search();
             }
             
