@@ -51,7 +51,7 @@
             <div class="search-ui-container">
                 <div class="wrapper">
                     <div class="facets">
-                        <div class="facet-container">
+                        <div class="facet-container" ng-if="isNotEmptyRecords">
                             <div class="facet-header">
                                 <span>Category</span>
                             </div>
@@ -189,7 +189,11 @@
                 console.log("Goto " + page);
             }
 
-            $scope.handleClickFacet = (event, facetField) => {
+            $scope.handleClickFacet = (e, facetField) => {
+
+                $(e.target).parents(".facets").find('.facet-option').removeClass('selected');
+                let el = angular.element(e.target.parentElement);
+                el.addClass('selected');
                 
                 $scope.from = 0;
 
