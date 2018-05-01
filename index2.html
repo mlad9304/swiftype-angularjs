@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/font.css">
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.8/angular-material.min.css">    
+</head>
+<body ng-app="myApp" ng-controller="myCtrl">
+    <div className="global-container">
+        <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <defs>
+                <symbol id="icon-small-search" viewBox="0 0 1024 1024">
+                    <title>search</title>
+                    <path class="path1" d="M848.471 928l-263.059-263.059c-48.941 36.706-110.118 55.059-177.412 55.059-171.294 0-312-140.706-312-312s140.706-312 312-312c171.294 0 312 140.706 312 312 0 67.294-24.471 128.471-55.059 177.412l263.059 263.059-79.529 79.529zM189.623 408.078c0 121.364 97.091 218.455 218.455 218.455s218.455-97.091 218.455-218.455c0-121.364-103.159-218.455-218.455-218.455-121.364 0-218.455 97.091-218.455 218.455z"></path>
+                </symbol>
+            </defs>
+        </svg>
+        <div class="global-search">
+            <div class="global-search__header">
+                <div class="header-wrapper">
+                    <div class="logo">
+                        <img src="/images/logo.svg" alt="logo svg">
+                    </div>
+                    <form id="search-form" class="global-search__form">
+                        <md-input-container class="md-block" flex-gt-sm>
+                            <label>Search Swiftype.com</label>
+                            <input ng-model="query" ng-change="handleChangeQuery()">
+                        </md-input-container>
+                        <svg class="icon">
+                            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-small-search"></use>
+                        </svg>
+                        <md-nav-bar
+                            class="global-navbar"
+                            md-no-ink-bar="disableInkBar"
+                            md-selected-nav-item="currentNavItem"
+                            nav-bar-aria-label="navigation links">
+                            <md-nav-item md-nav-click="goto('web')" name="web">
+                                Web
+                            </md-nav-item>
+                            <md-nav-item md-nav-click="goto('images')" name="images" ng-disabled="secondTabDisabled">
+                                Images
+                            </md-nav-item>
+                        </md-nav-bar>
+                    </form>
+                    
+                </div>
+            </div>
+            <div class="search-ui-container">
+                <div class="wrapper">
+                    <div class="facets">
+                        <div class="facet-container">
+                            <div class="facet-header">
+                                <span>Category</span>
+                            </div>
+                            <div class="facet-option selected" data-facet-value="all" ng-click="handleClickFacet($event, facetField, 'all')">
+                                <span class="facet-label">All</span>
+                                <span class="facet-count"></span>
+                            </div>
+                            <div ng-repeat="category in categories">
+                                <div class="facet-option" ng-click="handleClickFacet($event, key, doc_count)">
+                                    <span class="facet-label">{{category.key}}</span>
+                                    <span class="facet-count">{{category.doc_count}}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="results-container">
+                        <div class="results">
+                            <div ng-if="isNotEmptyRecords" class="search-summary">
+                                Showing results <strong ng-bind="page_row_count_summary"></strong> of <strong ng-bind="total"></strong> for <em ng-bind="query"></em>
+                            </div>
+                            <div ng-repeat="record in hits" class="result" target="_blank">
+                                <div class="result-title">
+                                    {{record._source.title}}
+                                </div>
+                                <div class="result-description">
+                                    <p ng-bind-html="record._source.text | trustAsHtml"></p>
+                                </div>
+                            </a>
+
+                        </div>
+                        <div ng-if="isNotEmptyRecords" class="pagination" style="display: block;">
+                            <span class="previous_page" ng-class="{disabled: isInvalidPrevPage}" ng-click="prevPage()">Previous</span>
+                            <span class="next_page" ng-class="{disabled: isInvalidNextPage}" ng-click="nextPage()">Next</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+        
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-animate.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-aria.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-messages.min.js"></script>
+    <!-- Angular Material Library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.8/angular-material.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+        var app = angular.module('myApp', ['ngMaterial', 'ngMessages']);
+        app.controller('myCtrl', async function($scope, $http) {
+
+            $scope.query = '';
+            $scope.from = 0;
+            $scope.size = 10;
+            $scope.categorySize = 10;
+
+            $scope.search = () => {
+                console.log($scope.query);
+                if($scope.query === '')
+                    return;
+
+                $http({
+                    method : "POST",
+                    url : `https://19d7d779f8a502497d7eed2a5d035771.ap-southeast-2.aws.found.io:9243/wiki/_search`,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    data: {
+                        "query": {
+                            "bool" : {
+                                "must" : {
+                                    "query_string" : {
+                                        "query" : $scope.query
+                                    }
+                                },
+                            }
+                        },
+                        "aggs" : {
+                            "index" : {
+                                "terms" : { "field" : "_index" }
+                            },
+                            "category" : {
+                                "terms" : { 
+                                    "field" : "categories.keyword", 
+                                    "size" : $scope.categorySize
+                                },
+                                
+                            }
+                        },
+                        "from": $scope.from,
+                        "size": $scope.size,
+                    }
+                }).then((response) => {
+                    
+                    const searchResult = response.data;
+                    const { category: categoryData, index } = searchResult.aggregations;
+                    const { buckets: categories } = categoryData;
+                    const { hits, total } = searchResult.hits;
+
+                    console.log(categories);
+
+                    $scope.categories = categories;
+                    $scope.index = index;
+                    $scope.hits = hits;
+                    $scope.total = total;
+
+                    $scope.isNotEmptyRecords = $scope.total > 0;
+                    $scope.page_row_count_summary = ($scope.from + 1) + '-' + ($scope.from + $scope.hits.length);
+                    $scope.isInvalidPrevPage = $scope.from <= 0;
+                    $scope.isInvalidNextPage = ($scope.from + $scope.hits.length) >= $scope.total;
+
+                },(error) => {
+                    console.log(error.statusText);
+                });
+
+            }
+            
+            $scope.handleChangeQuery = () => {
+                $scope.from = 0;
+                $scope.search();
+            }
+            
+            $scope.prevPage = () => {
+                $scope.from -= $scope.size;
+                $scope.search();
+            }
+            $scope.nextPage = () => {
+                $scope.from += $scope.size;
+                $scope.search();
+            }
+
+            $scope.goto = function(page) {
+                console.log("Goto " + page);
+            }
+            
+        });
+        app.filter('trustAsHtml',['$sce', function($sce) {
+            return function(text) {
+                return $sce.trustAsHtml(text);
+            };
+        }]);
+    </script>
+
+
+</body>
+</html>

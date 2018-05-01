@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/font.css">
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.8/angular-material.min.css">    
+</head>
+<body ng-app="myApp" ng-controller="myCtrl">
+    <div className="global-container">
+        <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <defs>
+                <symbol id="icon-small-search" viewBox="0 0 1024 1024">
+                    <title>search</title>
+                    <path class="path1" d="M848.471 928l-263.059-263.059c-48.941 36.706-110.118 55.059-177.412 55.059-171.294 0-312-140.706-312-312s140.706-312 312-312c171.294 0 312 140.706 312 312 0 67.294-24.471 128.471-55.059 177.412l263.059 263.059-79.529 79.529zM189.623 408.078c0 121.364 97.091 218.455 218.455 218.455s218.455-97.091 218.455-218.455c0-121.364-103.159-218.455-218.455-218.455-121.364 0-218.455 97.091-218.455 218.455z"></path>
+                </symbol>
+            </defs>
+        </svg>
+        <div class="global-search">
+            <div class="global-search__header">
+                <div class="header-wrapper">
+                    <div class="logo">
+                        <img src="/images/logo.svg" alt="logo svg">
+                    </div>
+                    <form id="search-form" class="global-search__form">
+                        <md-input-container class="md-block" flex-gt-sm>
+                            <label>Search Swiftype.com</label>
+                            <input ng-model="query" ng-change="handleChangeQuery()">
+                        </md-input-container>
+                        <svg class="icon">
+                            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-small-search"></use>
+                        </svg>
+                        <md-nav-bar
+                            class="global-navbar"
+                            md-no-ink-bar="disableInkBar"
+                            md-selected-nav-item="currentNavItem"
+                            nav-bar-aria-label="navigation links">
+                            <md-nav-item md-nav-click="goto('web')" name="web">
+                                Web
+                            </md-nav-item>
+                            <md-nav-item md-nav-click="goto('images')" name="images" ng-disabled="secondTabDisabled">
+                                Images
+                            </md-nav-item>
+                        </md-nav-bar>
+                    </form>
+                    
+                </div>
+            </div>
+            <div class="search-ui-container">
+                <div class="wrapper">
+                    <div class="facets">
+                        <div ng-repeat="(facetField, facetValues) in facets" ng-switch on="facetField">
+                            <div class="facet-container" data-facet-field="{{facetField}}" ng-if="isNotEmptyFacetValues(facetValues)">
+                                <div class="facet-header">
+                                    <span ng-switch-when="website_section">Section</span>
+                                    <span ng-switch-when="product">Swiftype Product</span>
+                                    <span ng-switch-when="documentation_type">Docs Content</span>
+                                </div>
+                                <div class="facet-option selected" data-facet-value="all" ng-click="handleClickFacet($event, facetField, 'all')">
+                                    <span class="facet-label">All</span>
+                                    <span class="facet-count"></span>
+                                </div>
+                                <div ng-repeat="(facetValue, facetCount) in facetValues">
+                                    <div class="facet-option" data-facet-value="{{facetValue}}" ng-click="handleClickFacet($event, facetField, facetValue)">
+                                        <span class="facet-label">{{facetValue}}</span>
+                                        <span class="facet-count">{{facetCount}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="results-container">
+                        <div class="results">
+                            <div ng-if="isNotEmptyRecords" class="search-summary">
+                                Showing results <strong ng-bind="page_row_count_summary"></strong> of <strong ng-bind="total_result_count"></strong> for <em ng-bind="query"></em>
+                            </div>
+                            <div ng-repeat="record in records" class="result">
+                                <div>
+                                    <a class="result-title" href="{{record.url}}" target="_blank">
+                                        {{record.title}}
+                                    </a>
+                                    <div class="result-url">{{record.url}}</div>
+                                </div>
+                                <div class="result-description">
+                                    <p ng-bind-html="record.highlight.body | trustAsHtml"></p>
+                                </div>
+                                <div class="result-footer">
+                                    <span class="result-tag result-tag--site-search">Site Search</span>
+                                    <span class="result-tag result-tag--section">
+                                    Documentation
+                                    </span>
+                                </div>
+                            </a>
+
+                        </div>
+                        <div ng-if="isNotEmptyRecords" class="pagination" style="display: block;">
+                            <span class="previous_page" ng-class="{disabled: isInvalidPrevPage}" ng-click="prevPage()">Previous</span>
+                            <span class="next_page" ng-class="{disabled: isInvalidNextPage}" ng-click="nextPage()">Next</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+        
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-animate.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-aria.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-messages.min.js"></script>
+    <!-- Angular Material Library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.8/angular-material.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+        var app = angular.module('myApp', ['ngMaterial', 'ngMessages']);
+        app.controller('myCtrl', function($scope, $http) {
+            $scope.currentNavItem = 'web';
+
+            $scope.query = '';
+            $scope.page = 1;
+            $scope.per_page = 10;
+            $scope.facetField = '';
+            $scope.facetValue = '';
+
+            $scope.search = (query, page, facetField, facetValue, isReplaceReturnedFacets=true) => {
+                if(query === '')
+                    return;
+
+                let url;
+
+                if(facetField !== '' && facetValue !== '' && facetValue !== 'all') {
+                    if(facetField === 'website_section') {
+                        url = `https://api.swiftype.com/api/v1/public/engines/search?q=${query}&page=${page}&per_page=${$scope.per_page}&filters[page][website_section]=${facetValue}&facets[page][]=product&facets[page][]=website_section&facets[page][]=documentation_type&engine_key=5jZG1gmmCTFYbSSDjpqq`;
+                    }
+
+                    if(facetField === 'product') {
+                        url = `https://api.swiftype.com/api/v1/public/engines/search?q=${query}&page=${page}&per_page=${$scope.per_page}&filters[page][product]=${facetValue}&facets[page][]=product&facets[page][]=website_section&facets[page][]=documentation_type&engine_key=5jZG1gmmCTFYbSSDjpqq`;
+                    }
+
+                    if(facetField === 'documentation_type') {
+                        url = `https://api.swiftype.com/api/v1/public/engines/search?q=${query}&page=${page}&per_page=${$scope.per_page}&filters[page][documentation_type]=${facetValue}&facets[page][]=product&facets[page][]=website_section&facets[page][]=documentation_type&engine_key=5jZG1gmmCTFYbSSDjpqq`;
+                    }
+                } else {
+                    url = `https://api.swiftype.com/api/v1/public/engines/search?q=${query}&page=${page}&per_page=${$scope.per_page}&facets[page][]=product&facets[page][]=website_section&facets[page][]=documentation_type&engine_key=5jZG1gmmCTFYbSSDjpqq`;
+                }
+
+                $http.get(url)
+                .then((response) => {
+                    const searchResult = response.data;
+                    const { info, records, record_count } = searchResult;
+                    const { current_page: page, num_pages, per_page, total_result_count, query, facets } = info.page;
+
+                    $scope.records = records.page;
+                    $scope.record_count = record_count;                    
+                    $scope.page = page;
+                    $scope.num_pages = num_pages;
+                    $scope.per_page = per_page;
+                    $scope.total_result_count = total_result_count;
+                    // $scope.query = query;
+                    if(isReplaceReturnedFacets)
+                        $scope.facets = facets;
+
+                    $scope.isNotEmptyRecords = $scope.record_count > 0;
+                    $scope.page_row_count_summary = (($scope.page - 1) * $scope.per_page + 1) + '-' + (($scope.page - 1) * $scope.per_page + $scope.record_count);
+                    $scope.isInvalidPrevPage = $scope.page === 1;
+                    $scope.isInvalidNextPage = $scope.page === num_pages;
+
+                    // console.log(searchResult);
+                });
+            }
+
+            $scope.handleChangeQuery = () => {
+                $scope.page = 1;
+                $scope.search($scope.query, $scope.page, $scope.facetField, $scope.facetValue);
+            }
+            
+            $scope.prevPage = () => {
+                $scope.search($scope.query, $scope.page - 1, $scope.facetField, $scope.facetValue, false);
+            }
+            $scope.nextPage = () => {
+                $scope.search($scope.query, $scope.page + 1, $scope.facetField, $scope.facetValue, false);
+            }
+
+            $scope.isNotEmptyFacetValues = (facetValues) => {
+                return !angular.equals(facetValues, {});
+            }
+
+            $scope.handleClickFacet = (e, facetField, facetValue) => {
+                $(e.target).parents(".facets").find('.facet-option').removeClass('selected');
+                $(e.target).parents(".facets").find('.facet-option:nth-child(2)').addClass('selected');
+                $(e.target).parents("div.facet-container").find('.facet-option').removeClass('selected')
+
+                let el = angular.element(e.target.parentElement);
+                el.addClass('selected');
+                
+                $scope.facetField = facetField;
+                $scope.facetValue = facetValue;
+                $scope.page = 1;
+                $scope.search($scope.query, $scope.page, $scope.facetField, $scope.facetValue, false);
+            }
+
+            $scope.goto = function(page) {
+                console.log("Goto " + page);
+            }
+            
+        });
+        app.filter('trustAsHtml',['$sce', function($sce) {
+            return function(text) {
+                return $sce.trustAsHtml(text);
+            };
+        }]);
+    </script>
+
+
+</body>
+</html>
