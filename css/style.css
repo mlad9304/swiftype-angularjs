@@ -285,6 +285,17 @@ md-nav-bar md-nav-ink-bar {
     font-weight:600;
     color:#3257ec
 }
+
+md-checkbox {
+    margin: 8px;
+    cursor: pointer;
+    padding-left: 18px;
+    padding-right: 0;
+    line-height: 26px;
+    min-width: 18px;
+    min-height: 18px;
+}
+
 .search-ui-container .results-container{
     width:100%
 }

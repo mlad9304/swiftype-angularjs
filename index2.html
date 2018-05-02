@@ -53,7 +53,7 @@
                     <div class="facets">
                         <div class="facet-container" ng-if="isNotEmptyRecords">
                             <div class="facet-header">
-                                <span>Category</span>
+                                <span>Categories</span>
                             </div>
                             <div class="facet-option selected" data-facet-value="all" ng-click="handleClickFacet($event, '_all')">
                                 <span class="facet-label">All</span>
@@ -63,6 +63,21 @@
                                 <div class="facet-option" ng-click="handleClickFacet($event, category.key)">
                                     <span class="facet-label">{{category.key}}</span>
                                     <span class="facet-count">{{category.doc_count}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="facet-container" ng-if="isNotEmptyRecords">
+                            <div class="facet-header">
+                                <span>Multi Select Categories</span>
+                            </div>
+                            <div ng-repeat="category in categories">
+                                    
+                                <div class="facet-option" ng-click="handleClickFacet($event, category.key)">
+                                    <md-checkbox md-no-ink aria-label="Checkbox No Ink" class="md-primary">
+                                        <span class="facet-label">{{category.key}}</span>
+                                        <span class="facet-count">{{category.doc_count}}</span>
+                                    </md-checkbox>
+                                    
                                 </div>
                             </div>
                         </div>
