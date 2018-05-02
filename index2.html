@@ -233,6 +233,12 @@
             $scope.handleChangeQuery = () => {
                 $scope.from = 0;
                 $scope.isFacetFilter = false;
+                $scope.isMultiFacetSelect = false;
+
+                for(let val in $scope.multiFacetsData)
+                    $scope.multiFacetsData[val] = false;
+                $scope.selectedMultiFacets = [];
+
                 $scope.search();
             }
             
@@ -338,8 +344,6 @@
                     if($scope.multiFacetsData[val])
                         $scope.selectedMultiFacets.push(val);
                 }
-
-                console.log($scope.selectedMultiFacets);
 
                 $scope.from = 0;
 
