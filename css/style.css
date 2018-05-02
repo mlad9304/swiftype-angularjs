@@ -268,7 +268,8 @@ md-nav-bar md-nav-ink-bar {
     -webkit-justify-content:space-between;
     -ms-flex-pack:justify;
     justify-content:space-between;
-    font-weight:400
+    font-weight:400;
+    min-height:20px;
 }
 .facet-option .facet-label{
     color:#536170;
@@ -287,14 +288,15 @@ md-nav-bar md-nav-ink-bar {
 }
 
 md-checkbox {
-    margin: 8px;
+    margin: 0px;
+    margin-bottom: 5px !important;
     cursor: pointer;
-    padding-left: 18px;
-    padding-right: 0;
-    line-height: 26px;
-    min-width: 18px;
-    min-height: 18px;
+    padding: 0;
 }
+md-checkbox .md-container {
+    top: 38% !important;
+}
+
 
 .search-ui-container .results-container{
     width:100%
