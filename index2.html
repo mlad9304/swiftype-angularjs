@@ -73,7 +73,7 @@
                             <div ng-repeat="category in categories">
                                     
                                 <div class="facet-option" ng-click="handleClickFacet($event, category.key)">
-                                    <md-checkbox md-no-ink aria-label="Checkbox No Ink" class="md-primary">
+                                    <md-checkbox md-no-ink aria-label="Checkbox No Ink" class="blue">
                                         <span class="facet-label">{{category.key}}</span>
                                         
                                     </md-checkbox>
@@ -85,8 +85,18 @@
                     <div class="results-container">
                         <div class="results">
                             <div ng-if="isNotEmptyRecords" class="search-summary">
-                                Showing results <strong ng-bind="page_row_count_summary"></strong> of <strong ng-bind="total"></strong> for <em ng-bind="query"></em>
-                                <span class="filter-label" ng-if="isFacetFilter"><strong>Category:</strong> {{selectedFacetValue}}</span>
+                                <div class="search-summary-label">
+                                    Showing results <strong ng-bind="page_row_count_summary"></strong> of <strong ng-bind="total"></strong> for <em ng-bind="query"></em>
+                                </div>
+                                <div class="filter-label-container">
+                                    <span class="filter-label" ng-if="isFacetFilter"><p><strong>Category:</strong> {{selectedFacetValue}}</p></span>
+                                    <span class="filter-label" ng-if="isFacetFilter"><p><strong>Category:</strong> {{selectedFacetValue}}</p></span>
+                                    <span class="filter-label" ng-if="isFacetFilter"><p><strong>Category:</strong> {{selectedFacetValue}}</p></span>
+                                    <span class="filter-label" ng-if="isFacetFilter"><p><strong>Category:</strong> {{selectedFacetValue}}</p></span>
+                                    <span class="filter-label" ng-if="isFacetFilter"><p><strong>Category:</strong> {{selectedFacetValue}}</p></span>
+                                    <span class="filter-label" ng-if="isFacetFilter"><p><strong>Category:</strong> {{selectedFacetValue}}</p></span>
+                                </div>
+                                <div style="clear:both;"></div>
                             </div>
                             <div ng-repeat="record in hits" class="result" target="_blank">
                                 <div class="result-title">
@@ -126,6 +136,7 @@
             $scope.categorySize = 5;
 
             $scope.isFacetFilter = false;
+            $scope.multiFacetsData = {};
 
             $scope.search = (isReplaceReturnedFacets=true) => {
                 console.log($scope.query);
@@ -207,6 +218,11 @@
                     $scope.page_row_count_summary = ($scope.from + 1) + '-' + ($scope.from + $scope.hits.length);
                     $scope.isInvalidPrevPage = $scope.from <= 0;
                     $scope.isInvalidNextPage = ($scope.from + $scope.hits.length) >= $scope.total;
+
+                    for(let i=0; i<categories.length; i++) {
+                        $scope.multiFacetsData[categories[i]] = false;
+                    }
+                    console.log($scope.multiFacetsData);
 
                 },(error) => {
                     console.log(error.statusText);
