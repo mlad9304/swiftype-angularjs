@@ -328,7 +328,7 @@ md-checkbox.md-checked.blue .md-icon {
     margin-bottom:10px;
     border-bottom:1px solid #E9EDF2;
     font-size:.875em;
-    padding-bottom: 5px;
+    padding-bottom: 3px;
 }
 .search-summary>*{
     margin:0 .25em
@@ -353,6 +353,7 @@ md-checkbox.md-checked.blue .md-icon {
     margin-left:3px;
     background-color:#fff;
     float:left;
+    margin-bottom: 2px;
 }
 .search-summary .filter-label p {
     display:ruby;
