@@ -4,25 +4,20 @@
 
   angular
     .module('app')
-    .controller('HomeController', ['$scope', '$http', homeController])
+    .controller('HomeController', homeController)
     .filter('trustAsHtml',['$sce', function($sce) {
       return function(text) {
           return $sce.trustAsHtml(text);
       };
   }]);
 
-  homeController.$inject = ['authService'];
+  homeController.$inject = ['authService', '$scope', '$http'];
 
-  function homeController($scope, $http, authService) {
+  function homeController(authService, $scope, $http) {
 
     var vm = this;
     vm.auth = authService;
 
-    
-
-
-
-    $scope.query = '';
     $scope.from = 0;
     $scope.size = 10;
     $scope.categorySize = 5;
@@ -124,6 +119,7 @@
     }
     
     $scope.handleChangeQuery = () => {
+
         $scope.from = 0;
         $scope.isFacetFilter = false;
         $scope.isMultiFacetSelect = false;

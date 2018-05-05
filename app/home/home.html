@@ -1,114 +1,115 @@
-<h4 ng-if="vm.auth.isAuthenticated()">
-    You are logged in!
-</h4>
+<div className="global-container" ng-if="vm.auth.isAuthenticated()">
+    <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <defs>
+            <symbol id="icon-small-search" viewBox="0 0 1024 1024">
+                <title>search</title>
+                <path class="path1" d="M848.471 928l-263.059-263.059c-48.941 36.706-110.118 55.059-177.412 55.059-171.294 0-312-140.706-312-312s140.706-312 312-312c171.294 0 312 140.706 312 312 0 67.294-24.471 128.471-55.059 177.412l263.059 263.059-79.529 79.529zM189.623 408.078c0 121.364 97.091 218.455 218.455 218.455s218.455-97.091 218.455-218.455c0-121.364-103.159-218.455-218.455-218.455-121.364 0-218.455 97.091-218.455 218.455z"></path>
+            </symbol>
+        </defs>
+    </svg>
+    <div class="global-search">
+        <div class="global-search__header">
+            <div class="header-wrapper">
+                <div class="logo">
+                    <img src="assets/images/logo.svg" alt="logo svg">
+                </div>
+                <form id="search-form" class="global-search__form">
+                    <md-input-container class="md-block" flex-gt-sm>
+                        <label>Search Swiftype.com</label>
+                        <input ng-model="$parent.query" ng-change="handleChangeQuery()">
+                        
+                    </md-input-container>
+                    <svg class="icon">
+                        <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-small-search"></use>
+                    </svg>
+                    <md-nav-bar
+                        class="global-navbar"
+                        md-no-ink-bar="disableInkBar"
+                        md-selected-nav-item="currentNavItem"
+                        nav-bar-aria-label="navigation links">
+                        <md-nav-item md-nav-click="goto('web')" name="web">
+                            Web
+                        </md-nav-item>
+                        <md-nav-item md-nav-click="goto('images')" name="images" ng-disabled="secondTabDisabled">
+                            Images
+                        </md-nav-item>
+                    </md-nav-bar>
+                </form>
+                <div class="logout">
+                    <md-button class="md-raised logout-button" ng-click="vm.auth.logout()">Logout</md-button>
+                </div>
+                
+            </div>
+        </div>
+        <div class="search-ui-container">
+            <div class="wrapper">
+                <div class="facets">
+                    <div class="facet-container" ng-if="isNotEmptyRecords">
+                        <div class="facet-header">
+                            <span>Categories</span>
+                        </div>
+                        <div class="facet-option selected" data-facet-value="all" ng-click="handleClickFacet($event, '_all')">
+                            <span class="facet-label">All</span>
+                            <span class="facet-count"></span>
+                        </div>
+                        <div ng-repeat="category in categories">
+                            <div class="facet-option" ng-click="handleClickFacet($event, category.key)">
+                                <span class="facet-label">{{category.key}}</span>
+                                <span class="facet-count">{{category.doc_count}}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="facet-container" ng-if="isNotEmptyRecords">
+                        <div class="facet-header">
+                            <span>Multi Select Categories</span>
+                        </div>
+                        <div ng-repeat="category in categories">
+                                
+                            <div class="facet-option">
+                                <md-checkbox md-no-ink aria-label="Checkbox No Ink" class="blue" 
+                                    ng-model="multiFacetsData[category.key]" ng-change="handleClickMultiFacet($event)">
+                                    <span class="facet-label">{{category.key}}</span>
+                                    
+                                </md-checkbox>
+                                <span class="facet-count">{{category.doc_count}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="results-container">
+                    <div class="results">
+                        <div ng-if="isNotEmptyRecords" class="search-summary">
+                            <div class="search-summary-label">
+                                Showing results <strong ng-bind="page_row_count_summary"></strong> of <strong ng-bind="total"></strong> for <em ng-bind="query"></em>
+                            </div>
+                            <div class="filter-label-container" ng-if="!isMultiFacetSelect">
+                                <span class="filter-label" ng-if="isFacetFilter"><span><strong>Category:</strong> {{selectedFacetValue}}</span></span>
+                            </div>
+                            <div class="filter-label-container" ng-if="isMultiFacetSelect">
+                                <span ng-repeat="(facetValue, facetFlag) in multiFacetsData" ng-if="facetFlag" class="filter-label"><span><strong>Category:</strong> {{facetValue}}</span></span>
+                            </div>
+                            <div style="clear:both;"></div>
+                        </div>
+                        <div ng-repeat="record in hits" class="result" target="_blank">
+                            <div class="result-title">
+                                {{record._source.title}}
+                            </div>
+                            <div class="result-description">
+                                <p ng-bind-html="record._source.text | trustAsHtml"></p>
+                            </div>
+                        </a>
+    
+                    </div>
+                    <div ng-if="isNotEmptyRecords" class="pagination" style="display: block;">
+                        <span class="previous_page" ng-class="{disabled: isInvalidPrevPage}" ng-click="prevPage()">Previous</span>
+                        <span class="next_page" ng-class="{disabled: isInvalidNextPage}" ng-click="nextPage()">Next</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <h4 ng-if="!vm.auth.isAuthenticated()">
   You are not logged in! Please <a ng-click="vm.auth.login()">Log In</a> to continue.
 </h4>
-<!-- 
-<div className="global-container">
-  <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-      <defs>
-          <symbol id="icon-small-search" viewBox="0 0 1024 1024">
-              <title>search</title>
-              <path class="path1" d="M848.471 928l-263.059-263.059c-48.941 36.706-110.118 55.059-177.412 55.059-171.294 0-312-140.706-312-312s140.706-312 312-312c171.294 0 312 140.706 312 312 0 67.294-24.471 128.471-55.059 177.412l263.059 263.059-79.529 79.529zM189.623 408.078c0 121.364 97.091 218.455 218.455 218.455s218.455-97.091 218.455-218.455c0-121.364-103.159-218.455-218.455-218.455-121.364 0-218.455 97.091-218.455 218.455z"></path>
-          </symbol>
-      </defs>
-  </svg>
-  <div class="global-search">
-      <div class="global-search__header">
-          <div class="header-wrapper">
-              <div class="logo">
-                  <img src="assets/images/logo.svg" alt="logo svg">
-              </div>
-              <form id="search-form" class="global-search__form">
-                  <md-input-container class="md-block" flex-gt-sm>
-                      <label>Search Swiftype.com</label>
-                      <input ng-model="query" ng-change="handleChangeQuery()">
-                  </md-input-container>
-                  <svg class="icon">
-                      <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-small-search"></use>
-                  </svg>
-                  <md-nav-bar
-                      class="global-navbar"
-                      md-no-ink-bar="disableInkBar"
-                      md-selected-nav-item="currentNavItem"
-                      nav-bar-aria-label="navigation links">
-                      <md-nav-item md-nav-click="goto('web')" name="web">
-                          Web
-                      </md-nav-item>
-                      <md-nav-item md-nav-click="goto('images')" name="images" ng-disabled="secondTabDisabled">
-                          Images
-                      </md-nav-item>
-                  </md-nav-bar>
-              </form>
-              
-          </div>
-      </div>
-      <div class="search-ui-container">
-          <div class="wrapper">
-              <div class="facets">
-                  <div class="facet-container" ng-if="isNotEmptyRecords">
-                      <div class="facet-header">
-                          <span>Categories</span>
-                      </div>
-                      <div class="facet-option selected" data-facet-value="all" ng-click="handleClickFacet($event, '_all')">
-                          <span class="facet-label">All</span>
-                          <span class="facet-count"></span>
-                      </div>
-                      <div ng-repeat="category in categories">
-                          <div class="facet-option" ng-click="handleClickFacet($event, category.key)">
-                              <span class="facet-label">{{category.key}}</span>
-                              <span class="facet-count">{{category.doc_count}}</span>
-                          </div>
-                      </div>
-                  </div>
-                  <div class="facet-container" ng-if="isNotEmptyRecords">
-                      <div class="facet-header">
-                          <span>Multi Select Categories</span>
-                      </div>
-                      <div ng-repeat="category in categories">
-                              
-                          <div class="facet-option">
-                              <md-checkbox md-no-ink aria-label="Checkbox No Ink" class="blue" 
-                                  ng-model="multiFacetsData[category.key]" ng-change="handleClickMultiFacet($event)">
-                                  <span class="facet-label">{{category.key}}</span>
-                                  
-                              </md-checkbox>
-                              <span class="facet-count">{{category.doc_count}}</span>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-              <div class="results-container">
-                  <div class="results">
-                      <div ng-if="isNotEmptyRecords" class="search-summary">
-                          <div class="search-summary-label">
-                              Showing results <strong ng-bind="page_row_count_summary"></strong> of <strong ng-bind="total"></strong> for <em ng-bind="query"></em>
-                          </div>
-                          <div class="filter-label-container" ng-if="!isMultiFacetSelect">
-                              <span class="filter-label" ng-if="isFacetFilter"><span><strong>Category:</strong> {{selectedFacetValue}}</span></span>
-                          </div>
-                          <div class="filter-label-container" ng-if="isMultiFacetSelect">
-                              <span ng-repeat="(facetValue, facetFlag) in multiFacetsData" ng-if="facetFlag" class="filter-label"><span><strong>Category:</strong> {{facetValue}}</span></span>
-                          </div>
-                          <div style="clear:both;"></div>
-                      </div>
-                      <div ng-repeat="record in hits" class="result" target="_blank">
-                          <div class="result-title">
-                              {{record._source.title}}
-                          </div>
-                          <div class="result-description">
-                              <p ng-bind-html="record._source.text | trustAsHtml"></p>
-                          </div>
-                      </a>
 
-                  </div>
-                  <div ng-if="isNotEmptyRecords" class="pagination" style="display: block;">
-                      <span class="previous_page" ng-class="{disabled: isInvalidPrevPage}" ng-click="prevPage()">Previous</span>
-                      <span class="next_page" ng-class="{disabled: isInvalidNextPage}" ng-click="nextPage()">Next</span>
-                  </div>
-              </div>
-          </div>
-      </div>
-  </div>
-</div> -->
