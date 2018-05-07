@@ -1,6 +1,6 @@
 .global-search {
     display: block;
-    position:fixed;
+    /* position:fixed; */
     top:.25rem;
     left:.25rem;
     width:calc(100vw - .5rem);
@@ -54,18 +54,25 @@
     transform: translateY(-50%);
 }
 
-.logout {
+.auth {
     position: absolute;
     right: 20px;
     width: 100px;
     height: 100%;
 }
 
-.logout .logout-button {
+.auth .login-button {
     position: relative;
     top: 45%;
     transform: translateY(-50%);
 }
+
+.auth .profile-menu {
+    position: relative;
+    top: 35%;
+    transform: translateY(-50%);
+}
+
 
 .global-search__form{
     position:absolute;

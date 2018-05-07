@@ -10,14 +10,16 @@
     '$stateProvider',
     '$locationProvider',
     '$urlRouterProvider',
-    'angularAuth0Provider'
+    'angularAuth0Provider',
+    '$mdIconProvider'
   ];
 
   function config(
     $stateProvider,
     $locationProvider,
     $urlRouterProvider,
-    angularAuth0Provider
+    angularAuth0Provider,
+    $mdIconProvider
   ) {
 
     $stateProvider
@@ -41,7 +43,7 @@
       responseType: 'token id_token',
       audience: 'https://' + AUTH0_DOMAIN + '/userinfo',
       redirectUri: AUTH0_CALLBACK_URL,
-      scope: 'openid'
+      scope: 'openid profile'
     });
 
     $urlRouterProvider.otherwise('/');
@@ -51,6 +53,10 @@
     /// Comment out the line below to run the app
     // without HTML5 mode (will use hashes in routes)
     $locationProvider.html5Mode(true);
+
+    $mdIconProvider
+      .iconSet("call", 'img/icons/sets/communication-icons.svg', 24)
+      .iconSet("social", 'img/icons/sets/social-icons.svg', 24);
   }
 
 })();

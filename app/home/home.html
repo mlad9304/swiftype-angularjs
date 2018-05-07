@@ -1,4 +1,4 @@
-<div className="global-container" ng-if="vm.auth.isAuthenticated()">
+<div className="global-container">
     <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
         <defs>
             <symbol id="icon-small-search" viewBox="0 0 1024 1024">
@@ -15,7 +15,7 @@
                 </div>
                 <form id="search-form" class="global-search__form">
                     <md-input-container class="md-block" flex-gt-sm>
-                        <label>Search Swiftype.com</label>
+                        <label>Search</label>
                         <input ng-model="$parent.query" ng-change="handleChangeQuery()">
                         
                     </md-input-container>
@@ -35,8 +35,33 @@
                         </md-nav-item>
                     </md-nav-bar>
                 </form>
-                <div class="logout">
-                    <md-button class="md-raised logout-button" ng-click="vm.auth.logout()">Logout</md-button>
+                <div class="auth" ng-init="onInit()">
+                    <md-button ng-if="!vm.auth.isAuthenticated()" class="md-raised login-button" ng-click="vm.auth.login()">Login</md-button>
+                    <!-- <md-button ng-if="vm.auth.isAuthenticated()" class="md-raised logout-button" ng-click="vm.auth.logout()">Logout</md-button> -->
+                    <md-menu ng-if="vm.auth.isAuthenticated()" class="profile-menu">
+                            
+                        <md-button ng-click="openMenu($mdMenu, $event)">
+                            <i class="fa fa-user"></i>
+                            {{nickname}}
+                        </md-button>
+                        
+                        <md-menu-content width="4">
+                            <md-menu-item>
+                                <md-button>
+                                    <i class="fa fa-user"></i>
+                                    Profile
+                                </md-button>
+                            </md-menu-item>
+                            <md-menu-divider></md-menu-divider>
+                            <md-menu-item>
+                                <md-button ng-click="vm.auth.logout()">
+                                    <i class="fa fa-sign-out"></i>
+                                    Log Out
+                                </md-button>
+                            </md-menu-item>
+                            
+                        </md-menu-content>
+                    </md-menu>
                 </div>
                 
             </div>
@@ -109,7 +134,4 @@
         </div>
     </div>
 </div>
-<h4 ng-if="!vm.auth.isAuthenticated()">
-  You are not logged in! Please <a ng-click="vm.auth.login()">Log In</a> to continue.
-</h4>
 

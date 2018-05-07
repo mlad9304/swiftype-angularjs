@@ -52,11 +52,23 @@
       return new Date().getTime() < expiresAt;
     }
 
+    function getProfile(cb) {
+      var accessToken = localStorage.getItem('access_token');
+      if (!accessToken) {
+        // throw new Error('Access Token must exist to fetch profile');
+        return;
+      }
+      angularAuth0.client.userInfo(accessToken, function(err, profile) {
+        cb(err, profile);
+      });
+    }
+
     return {
       login: login,
       handleAuthentication: handleAuthentication,
       logout: logout,
-      isAuthenticated: isAuthenticated
+      isAuthenticated: isAuthenticated,
+      getProfile: getProfile,
     }
   }
 })();

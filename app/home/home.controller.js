@@ -11,12 +11,18 @@
       };
   }]);
 
-  homeController.$inject = ['authService', '$scope', '$http'];
+  homeController.$inject = ['authService', '$scope', '$http', '$rootScope'];
 
-  function homeController(authService, $scope, $http) {
+  function homeController(authService, $scope, $rootScope, $http) {
 
     var vm = this;
     vm.auth = authService;
+
+    authService.getProfile(function(err, profile) {
+        // vm.profile = profile;
+        $scope.nickname = profile.nickname;
+        $scope.$apply();
+    });
 
     $scope.from = 0;
     $scope.size = 10;
@@ -26,6 +32,18 @@
     $scope.isMultiFacetSelect = false;
     $scope.multiFacetsData = {};
     $scope.selectedMultiFacets = [];
+    $scope.nickname = "";
+
+    var originatorEv;
+
+    $scope.openMenu = function($mdMenu, ev) {
+        originatorEv = ev;
+        $mdMenu.open(ev);
+    };
+
+    $scope.onInit = function(){
+        console.log("init : " + $scope.nickname);
+    }
 
     $scope.search = (isReplaceReturnedFacets=true) => {
         console.log($scope.query);
