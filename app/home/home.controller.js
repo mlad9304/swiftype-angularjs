@@ -11,9 +11,9 @@
       };
   }]);
 
-  homeController.$inject = ['authService', '$scope', '$http', '$rootScope'];
+  homeController.$inject = ['authService', '$scope', '$http', '$mdDialog'];
 
-  function homeController(authService, $scope, $rootScope, $http) {
+  function homeController(authService, $scope, $http, $mdDialog) {
 
     var vm = this;
     vm.auth = authService;
@@ -21,8 +21,62 @@
     authService.getProfile(function(err, profile) {
         // vm.profile = profile;
         $scope.nickname = profile.nickname;
+        $scope.email = profile.name;
+        console.log(profile);
         $scope.$apply();
     });
+
+    $scope.openMenu = function($mdMenu, ev) {
+        $mdMenu.open(ev);
+    };
+    
+
+    $scope.profile = function(ev) {
+
+        $mdDialog.show({
+            parent: angular.element(document.querySelector('#searchHeader')),
+            targetEvent: ev,
+            template:
+              '<md-dialog aria-label="List dialog">' +
+              '<md-toolbar>' +
+                '<div class="md-toolbar-tools">' +
+                    '<h2>Profile</h2>' +
+                    // '<md-button class="md-icon-button" ng-click="cancel()">' +
+                    // '<md-icon md-svg-src="img/icons/ic_close_24px.svg" aria-label="Close dialog"></md-icon>' +
+                    // '</md-button>' +
+                '</div>' +
+              '</md-toolbar>' +
+              '  <md-dialog-content>'+
+              '    <md-list>'+
+              '      <md-list-item>'+
+              '       <p>Email: {{email}}</p>' +
+              '      '+
+              '      </md-list-item>'+
+              '      <md-list-item>'+
+              '       <p>Nickname: {{nickname}}</p>' +
+              '      '+
+              '      </md-list-item>'+
+              '    </md-list>'+
+              '  </md-dialog-content>' +
+              '  <md-dialog-actions>' +
+              '    <md-button ng-click="closeDialog()" class="md-primary">' +
+              '      Got it!' +
+              '    </md-button>' +
+              '  </md-dialog-actions>' +
+              '</md-dialog>',
+            locals: {
+                email: $scope.email,
+                nickname: $scope.nickname
+            },
+            controller: function($scope, $mdDialog, email, nickname) {
+                $scope.email = email;
+                $scope.nickname = nickname;
+                $scope.closeDialog = function() {
+                  $mdDialog.hide();
+                }
+            }
+         });
+      };
 
     $scope.from = 0;
     $scope.size = 10;
@@ -36,14 +90,7 @@
 
     var originatorEv;
 
-    $scope.openMenu = function($mdMenu, ev) {
-        originatorEv = ev;
-        $mdMenu.open(ev);
-    };
-
-    $scope.onInit = function(){
-        console.log("init : " + $scope.nickname);
-    }
+    
 
     $scope.search = (isReplaceReturnedFacets=true) => {
         console.log($scope.query);
