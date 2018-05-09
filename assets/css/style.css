@@ -33,7 +33,7 @@
     margin-left:auto;
     margin-right:auto;
     display: flex;
-    height:60px;
+    height:120px;
     position:relative
 }
 @media (min-width: 768px){
@@ -46,12 +46,19 @@
 .logo {
     width: 60px;
     height: 100%;
+    margin-left: 20px;
 }
 
 .logo img {
     position: relative;
     top: 50%;
     transform: translateY(-50%);
+}
+
+@media (min-width: 768px){
+    .logo {
+        margin-left: 20px;
+    }
 }
 
 .auth {
@@ -78,9 +85,9 @@
     position:absolute;
     top:0;
     left:1rem;
-    width:calc(100% - 270px);
+    width:calc(100% - 230px);
     height: 100%;
-    left: 130px;
+    left: 90px;
 }
 .global-search__form md-input-container {
     margin-top: 30px;
@@ -101,6 +108,14 @@
     color:#A5B4C4
 }
 @media (min-width: 768px){
+    .global-search__form{
+        position:absolute;
+        top:0;
+        left:1rem;
+        width:calc(100% - 260px);
+        height: 100%;
+        left: 120px;
+    }
     .global-search__form .icon{
         left:1rem
     }
@@ -198,7 +213,7 @@ md-nav-bar md-nav-ink-bar {
     }
 }
 .global-search__header .wrapper{
-    height:60px;
+    height: 120px;
     position:relative
 }
 @media (min-width: 768px){
@@ -207,13 +222,30 @@ md-nav-bar md-nav-ink-bar {
     }
 }
 
+.s-sidebar__trigger {
+    z-index: 2;
+    position: fixed;
+    top: 120px;
+    left: 0;
+    width: 4em;
+    height: 4em;
+    background: #192b3c;
+    opacity: 0.4;
+    display: none;
+}
+
+.s-sidebar__trigger > i {
+    display: inline-block;
+    margin: 1.5em 0 0 1.5em;
+    color: #f07ab0;
+}
 
 .search-ui-container{
     position:absolute;
-    top:60px;
+    top:130px;
     left:0;
     width:100vw;
-    height:calc(100vh - 60px);
+    height:calc(100vh - 130px);
     overflow:auto;
     padding-top:2rem
 }
@@ -230,17 +262,30 @@ md-nav-bar md-nav-ink-bar {
     display:flex
 }
 .search-ui-container .facets{
-    display:none;
-    width:0
+    display:block;
+    width:300px;
+    margin-right:50px;
+    min-height: 200px;
 }
-@media (min-width: 1024px){
+@media (max-width: 1024px){
     .search-ui-container .facets{
-        display:block;
-        width:300px;
-        margin-right:50px
+        display: none;
     }
-    .search-ui-container .facets .facet-label{
-        text-transform:capitalize
+    .s-sidebar__trigger {
+        display: block;
+    }
+
+    .facets:hover,
+    .facets:focus,
+    .s-sidebar__trigger:hover + .facets,
+    .s-sidebar__trigger:focus + .facets {
+        position: fixed;
+        top: 120px;
+        left: 0px;
+        z-index: 2;
+        background-color: white;
+        padding: 20px;
+        display: block;
     }
 }
 .facet-container{
