@@ -1,4 +1,7 @@
-<div className="global-container">
+<div class="top-banner">
+    <span class="top-banner-title">development</span>
+</div>
+<div class="global-container">
     <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
         <defs>
             <symbol id="icon-small-search" viewBox="0 0 1024 1024">
@@ -119,14 +122,38 @@
                             </div>
                             <div style="clear:both;"></div>
                         </div>
-                        <div ng-repeat="record in hits" class="result" target="_blank">
+                        <!-- <div ng-repeat="record in hits" class="result" target="_blank">
                             <div class="result-title">
                                 {{record._source.title}}
                             </div>
                             <div class="result-description">
                                 <p ng-bind-html="record._source.text | trustAsHtml"></p>
                             </div>
-                        </a>
+                        </div> -->
+                        <md-grid-list layout-fill flex
+                            md-cols="1"
+                            md-cols-sm="1"
+                            md-cols-gt-md="2"
+                            md-row-height-sm="100%"
+                            md-row-height="480px"
+                            md-gutter="8px" md-gutter-gt-sm="4px">
+                            <md-grid-tile ng-repeat="record in hits">
+                                    <md-card class="result">
+                                            <img ng-src="assets/images/back.jpg" class="md-card-image" alt="Washed Out">
+                                            <md-card-title>
+                                              <md-card-title-text>
+                                                <span class="md-headline result-title">{{record._source.title}}</span>
+                                              </md-card-title-text>
+                                            </md-card-title>
+                                            <md-card-content class="result-description">
+                                                    <p ng-bind-html="record._source.text | trustAsHtml"></p>
+                                            </md-card-content>
+                                          </md-card>
+                            </md-grid-tile>
+                            
+
+                            
+                        </md-grid-list>
     
                     </div>
                     <div ng-if="isNotEmptyRecords" class="pagination" style="display: block;">
