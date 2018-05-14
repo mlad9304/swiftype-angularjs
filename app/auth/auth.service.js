@@ -6,9 +6,11 @@
     .module('app')
     .service('authService', authService);
 
-  authService.$inject = ['$state', 'angularAuth0', '$timeout'];
+  authService.$inject = ['$state', 'angularAuth0', '$timeout', '$rootScope'];
 
-  function authService($state, angularAuth0, $timeout) {
+  function authService($state, angularAuth0, $timeout, $rootScope) {
+
+    $rootScope.g_bIsAuth = false;
 
     function login() {
       angularAuth0.authorize();
@@ -18,6 +20,7 @@
       angularAuth0.parseHash(function(err, authResult) {
         if (authResult && authResult.accessToken && authResult.idToken) {
           setSession(authResult);
+          $rootScope.g_bIsAuth = true;
           $state.go('home');
         } else if (err) {
           $timeout(function() {

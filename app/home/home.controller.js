@@ -11,20 +11,32 @@
       };
   }]);
 
-  homeController.$inject = ['authService', '$scope', '$http', '$mdDialog'];
+  homeController.$inject = ['authService', '$scope', '$http', '$mdDialog', '$rootScope'];
 
-  function homeController(authService, $scope, $http, $mdDialog) {
+  function homeController(authService, $scope, $http, $mdDialog, $rootScope) {
 
     var vm = this;
     vm.auth = authService;
 
-    authService.getProfile(function(err, profile) {
-        // vm.profile = profile;
-        $scope.nickname = profile.nickname;
-        $scope.email = profile.name;
-        console.log(profile);
-        $scope.$apply();
-    });
+    $scope.$watch(function(){
+        return $rootScope.g_bIsAuth;
+    }, function(newVal, oldVal){
+        //do something with values
+        if (newVal == true) getProfile();
+    }) 
+
+
+    const getProfile = () => {
+        authService.getProfile(function(err, profile) {
+            // vm.profile = profile;
+            $scope.nickname = profile.nickname;
+            $scope.email = profile.name;
+            console.log(profile);
+            $scope.$apply();
+        });
+    }    
+
+    getProfile();
 
     $scope.openMenu = function($mdMenu, ev) {
         $mdMenu.open(ev);
@@ -79,7 +91,7 @@
       };
 
     $scope.from = 0;
-    $scope.size = 10;
+    $scope.size = 12;
     $scope.categorySize = 5;
 
     $scope.isFacetFilter = false;

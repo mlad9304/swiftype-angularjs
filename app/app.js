@@ -21,7 +21,7 @@
     angularAuth0Provider,
     $mdIconProvider
   ) {
-
+    
     $stateProvider
       .state('home', {
         url: '/',
@@ -34,6 +34,10 @@
         controller: 'CallbackController',
         templateUrl: 'app/callback/callback.html',
         controllerAs: 'vm'
+      })
+      .state('test', {
+        url: '/test',
+        template: '<h1>testing</h1>'
       });
 
     // Initialization for the angular-auth0 library
@@ -52,11 +56,9 @@
 
     /// Comment out the line below to run the app
     // without HTML5 mode (will use hashes in routes)
-    $locationProvider.html5Mode(true);
+    // $locationProvider.html5Mode(true);
 
-    $mdIconProvider
-      .iconSet("call", 'img/icons/sets/communication-icons.svg', 24)
-      .iconSet("social", 'img/icons/sets/social-icons.svg', 24);
+    
   }
 
 })();
