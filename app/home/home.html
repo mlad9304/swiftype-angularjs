@@ -122,14 +122,24 @@
                             </div>
                             <div style="clear:both;"></div>
                         </div>
-                        <!-- <div ng-repeat="record in hits" class="result" target="_blank">
+                        <!--
+                            Google Layout Start
+                        -->
+                        <!-- <div ng-repeat="record in hits" class="result" style="padding: 1rem">
                             <div class="result-title">
                                 {{record._source.title}}
                             </div>
-                            <div class="result-description">
+                            <div class="result-description" style="border-left: 1px solid #DAE2EB; padding-left: 8px; height: 40px">
                                 <p ng-bind-html="record._source.text | trustAsHtml"></p>
                             </div>
                         </div> -->
+                        <!-- Google Layout End -->
+
+
+
+                        <!--
+                            Card Layout Start
+                        -->
                         <md-grid-list layout-fill flex
                             md-cols="1"
                             md-cols-xs="1"
@@ -152,13 +162,14 @@
                                             <span>{{record._source.title}}</span>
                                         </md-card-title-text>
                                     </md-card-title>
-                                    <md-card-content class="result-description">
+                                    <md-card-content class="result-description" style="height: 80px">
                                         <p ng-bind-html="record._source.text | trustAsHtml"></p>
                                     </md-card-content>
                                     
                                 </md-card>
                             </md-grid-tile>
                         </md-grid-list>
+                        <!-- Card Layout End-->
     
                     </div>
                     <div ng-if="isNotEmptyRecords" class="pagination" style="display: block;">
