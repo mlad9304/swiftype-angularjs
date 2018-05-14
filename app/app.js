@@ -34,7 +34,7 @@
         controller: 'CallbackController',
         templateUrl: 'app/callback/callback.html',
         controllerAs: 'vm'
-      });;
+      });
 
     // Initialization for the angular-auth0 library
     angularAuth0Provider.init({
