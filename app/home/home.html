@@ -122,38 +122,43 @@
                             </div>
                             <div style="clear:both;"></div>
                         </div>
-                        <!-- <div ng-repeat="record in hits" class="result" target="_blank">
+                        <div ng-repeat="record in hits" class="result" target="_blank">
                             <div class="result-title">
                                 {{record._source.title}}
                             </div>
                             <div class="result-description">
                                 <p ng-bind-html="record._source.text | trustAsHtml"></p>
                             </div>
-                        </div> -->
-                        <md-grid-list layout-fill flex
+                        </div>
+                        <!-- <md-grid-list layout-fill flex
                             md-cols="1"
-                            md-cols-sm="1"
-                            md-cols-gt-md="2"
-                            md-row-height-sm="100%"
-                            md-row-height="480px"
-                            md-gutter="8px" md-gutter-gt-sm="4px">
+                            md-cols-xs="1"
+                            md-cols-gt-xs="1"
+                            md-cols-sm="2"
+                            md-cols-gt-sm="2"
+                            md-cols-gt-md="3"
+                            md-row-height-xs="4:5"
+                            md-row-height-gt-xs="4:5"
+                            md-row-height-sm="4:5"
+                            md-row-height-gt-sm="4:5"
+                            md-row-height-md="400px"
+                            md-row-height-gt-md="400px"
+                            md-gutter="12px" md-gutter-gt-sm="8px">
                             <md-grid-tile ng-repeat="record in hits">
-                                    <md-card class="result">
-                                            <img ng-src="assets/images/back.jpg" class="md-card-image" alt="Washed Out">
-                                            <md-card-title>
-                                              <md-card-title-text>
-                                                <span class="md-headline result-title">{{record._source.title}}</span>
-                                              </md-card-title-text>
-                                            </md-card-title>
-                                            <md-card-content class="result-description">
-                                                    <p ng-bind-html="record._source.text | trustAsHtml"></p>
-                                            </md-card-content>
-                                          </md-card>
+                                <md-card class="result">
+                                    <img ng-src="assets/images/back.jpg" class="md-card-image" alt="Washed Out">
+                                    <md-card-title class="result-title">
+                                        <md-card-title-text>
+                                            <span>{{record._source.title}}</span>
+                                        </md-card-title-text>
+                                    </md-card-title>
+                                    <md-card-content class="result-description">
+                                        <p ng-bind-html="record._source.text | trustAsHtml"></p>
+                                    </md-card-content>
+                                    
+                                </md-card>
                             </md-grid-tile>
-                            
-
-                            
-                        </md-grid-list>
+                        </md-grid-list> -->
     
                     </div>
                     <div ng-if="isNotEmptyRecords" class="pagination" style="display: block;">
