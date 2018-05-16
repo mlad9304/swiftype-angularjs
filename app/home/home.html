@@ -172,7 +172,8 @@
                                         <p ng-bind-html="record._source.text | trustAsHtml"></p>
                                     </md-card-content>
                                     <div class="save-button-container" ng-click="saveResult(record)">
-                                        <span class="save-button">+</span>
+                                        <span class="save-button" ng-if="!record.isSaved">+</span>
+                                        <i class="save-button fa fa-check" ng-if="record.isSaved"></i>
                                     </div>
                                 </md-card>
                             </md-grid-tile>
