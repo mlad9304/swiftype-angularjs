@@ -125,14 +125,20 @@
                         <!--
                             Google Layout Start
                         -->
-                        <!-- <div ng-repeat="record in hits" class="result" style="padding: 1rem">
-                            <div class="result-title">
-                                {{record._source.title}}
-                            </div>
-                            <div class="result-description" style="border-left: 1px solid #DAE2EB; padding-left: 8px; height: 40px">
-                                <p ng-bind-html="record._source.text | trustAsHtml"></p>
-                            </div>
-                        </div> -->
+                        <!-- <ul style="padding-left: 0">
+                            <li ng-repeat="record in hits" class="result" style="padding: 1rem; position: relative; list-style-type: none;">
+                                <div class="result-title">
+                                    {{record._source.title}}
+                                </div>
+                                <div class="result-description" style="border-left: 1px solid #DAE2EB; padding-left: 8px; height: 40px">
+                                    <p ng-bind-html="record._source.text | trustAsHtml"></p>
+                                </div>
+                                <div class="save-button-container" style="bottom: 10px !important;">
+                                    <a class="save-button">+</a>
+                                </div>
+                            </li>
+                        </ul> -->
+                        
                         <!-- Google Layout End -->
 
 
@@ -165,7 +171,9 @@
                                     <md-card-content class="result-description" style="height: 80px">
                                         <p ng-bind-html="record._source.text | trustAsHtml"></p>
                                     </md-card-content>
-                                    
+                                    <div class="save-button-container" ng-click="saveResult(record)">
+                                        <span class="save-button">+</span>
+                                    </div>
                                 </md-card>
                             </md-grid-tile>
                         </md-grid-list>

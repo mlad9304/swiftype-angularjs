@@ -38,6 +38,46 @@
 
     getProfile();
 
+    $rootScope.saveResult = (item) => {
+        console.log(item);
+        console.log($rootScope.userid);
+        // $http({
+        //     method : "POST",
+        //     url : `https://19d7d779f8a502497d7eed2a5d035771.ap-southeast-2.aws.found.io:9243/wiki/_search`,
+        //     headers: {
+        //         'Content-Type': 'application/json'
+        //     },
+        //     data: {
+        //         "from": $scope.from,
+        //         "size": $scope.size,
+        //         query,
+        //         "aggs" : {
+        //             "index" : {
+        //                 "terms" : { "field" : "_index" }
+        //             },
+        //             "category" : {
+        //                 "terms" : { 
+        //                     "field" : "categories.keyword", 
+        //                     "size" : $scope.categorySize
+        //                 },
+                        
+        //             }
+        //         },
+        //     }
+        // }).then((response) => {
+            
+        //     const searchResult = response.data;
+        //     const { category: categoryData, index } = searchResult.aggregations;
+        //     const { buckets: categories } = categoryData;
+        //     const { hits, total } = searchResult.hits;
+
+            
+
+        // },(error) => {
+        //     console.log(error.statusText);
+        // });
+    }
+
     $scope.openMenu = function($mdMenu, ev) {
         $mdMenu.open(ev);
     };
@@ -374,7 +414,9 @@
         },(error) => {
             console.log(error.statusText);
         });
-    }            
+    }
+
+    
   }
 
 })();
