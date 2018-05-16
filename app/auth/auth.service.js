@@ -22,7 +22,6 @@
           setSession(authResult);
           $rootScope.g_bIsAuth = true;
           $rootScope.userid = authResult.sub;
-          console.log(authResult);
           $state.go('home');
         } else if (err) {
           $timeout(function() {

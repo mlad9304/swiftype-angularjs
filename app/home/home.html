@@ -34,10 +34,15 @@
                         <md-nav-item md-nav-click="goto('web')" name="web">
                             Web
                         </md-nav-item>
-                        <md-nav-item md-nav-click="goto('images')" name="images" ng-disabled="secondTabDisabled">
+                        <md-nav-item md-nav-click="goto('images')" name="images">
                             Images
                         </md-nav-item>
+                        <div style="margin:15px 30px 0" ng-if="isLogged"> | </div>
+                        <md-nav-item md-nav-click="goto('mysaves')" name="mysaves" ng-if="isLogged">
+                            My saves
+                        </md-nav-item>
                     </md-nav-bar>
+                    
                 </form>
                 <div class="auth" ng-init="onInit()">
                     <md-button ng-if="!vm.auth.isAuthenticated()" class="md-raised login-button" ng-click="vm.auth.login()">Login</md-button>
@@ -58,7 +63,7 @@
                             </md-menu-item>
                             <md-menu-divider></md-menu-divider>
                             <md-menu-item>
-                                <md-button ng-click="vm.auth.logout()">
+                                <md-button ng-click="logout()">
                                     <i class="fa fa-sign-out"></i>
                                     Log Out
                                 </md-button>
@@ -111,7 +116,10 @@
                 <div class="results-container">
                     <div class="results">
                         <div ng-if="isNotEmptyRecords" class="search-summary">
-                            <div class="search-summary-label">
+                            <div class="search-summary-label" ng-if="isMySaves">
+                                Saved results <strong ng-bind="page_row_count_summary"></strong> of <strong ng-bind="total"></strong>
+                            </div>
+                            <div class="search-summary-label" ng-if="!isMySaves">
                                 Showing results <strong ng-bind="page_row_count_summary"></strong> of <strong ng-bind="total"></strong> for <em ng-bind="query"></em>
                             </div>
                             <div class="filter-label-container" ng-if="!isMultiFacetSelect">
@@ -133,8 +141,12 @@
                                 <div class="result-description" style="border-left: 1px solid #DAE2EB; padding-left: 8px; height: 40px">
                                     <p ng-bind-html="record._source.text | trustAsHtml"></p>
                                 </div>
-                                <div class="save-button-container" style="bottom: 10px !important;">
-                                    <a class="save-button">+</a>
+                                <div class="save-button-container" ng-click="removeResult(record)" ng-if="isLogged && isMySaves" style="bottom: 10px !important;">
+                                    <i class="save-button fa fa-trash"></i>
+                                </div>
+                                <div class="save-button-container" ng-click="saveResult(record)" ng-if="isLogged && !isMySaves" style="bottom: 10px !important;">
+                                    <span class="save-button" ng-if="!record.isSaved">+</span>
+                                    <i class="save-button fa fa-check" ng-if="record.isSaved"></i>
                                 </div>
                             </li>
                         </ul> -->
@@ -171,7 +183,10 @@
                                     <md-card-content class="result-description" style="height: 80px">
                                         <p ng-bind-html="record._source.text | trustAsHtml"></p>
                                     </md-card-content>
-                                    <div class="save-button-container" ng-click="saveResult(record)">
+                                    <div class="save-button-container" ng-click="removeResult(record)" ng-if="isLogged && isMySaves">
+                                        <i class="save-button fa fa-trash"></i>
+                                    </div>
+                                    <div class="save-button-container" ng-click="saveResult(record)" ng-if="isLogged && !isMySaves">
                                         <span class="save-button" ng-if="!record.isSaved">+</span>
                                         <i class="save-button fa fa-check" ng-if="record.isSaved"></i>
                                     </div>

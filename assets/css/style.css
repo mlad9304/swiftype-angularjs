@@ -432,7 +432,7 @@ md-checkbox.md-checked.blue .md-icon {
     box-shadow:0 1px 3px rgba(0,0,0,0.05);
 }
 .search-ui-container .result:hover img, .search-ui-container .result:hover .result-title, .search-ui-container .result:hover .result-description {
-    opacity: 0.3;
+    opacity: 0.6;
 }
 .search-ui-container .result:hover .save-button-container {
     opacity: 1;

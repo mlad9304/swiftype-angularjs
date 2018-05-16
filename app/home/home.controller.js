@@ -32,7 +32,7 @@
             $scope.nickname = profile.nickname;
             $scope.email = profile.name;
             $scope.user = profile.sub.substr(6);
-            console.log(profile);
+            $scope.isLogged = true;
             $scope.$apply();
         });
     }    
@@ -53,12 +53,34 @@
             data: {
                 "user": $scope.user,
                 "date_created": new Date().toJSON(),
-                "category": [...item._source.categories]
+                "categories": [...item._source.categories],
+                "title": item._source.title,
+                "text": item._source.text
             }
         }).then((response) => {
             
-            console.log(response);
             item.isSaved = true;
+        },(error) => {
+            console.log(error.statusText);
+        });
+    }
+
+    $rootScope.removeResult = (item) => {
+
+        $http({
+            method : "DELETE",
+            url : `https://19d7d779f8a502497d7eed2a5d035771.ap-southeast-2.aws.found.io:9243/saveddoc/_doc/${item._id}`,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        }).then((response) => {
+            
+            for(let i=0; i<$scope.hits.length; i++) {
+                if(response.data._id === $scope.hits[i]._id) {
+                    $scope.hits.splice(i, 1);
+                    break;
+                }
+            }
         },(error) => {
             console.log(error.statusText);
         });
@@ -67,6 +89,12 @@
     $scope.openMenu = function($mdMenu, ev) {
         $mdMenu.open(ev);
     };
+
+    $scope.logout = () => {
+        $scope.isLogged = false;
+        $scope.currentNavItem = 'web';
+        vm.auth.logout();
+    }
     
 
     $scope.profile = function(ev) {
@@ -126,6 +154,8 @@
     $scope.selectedMultiFacets = [];
     $scope.nickname = "";
 
+    $scope.currentNavItem = 'web';
+
     var originatorEv;
 
     
@@ -135,47 +165,14 @@
         if($scope.query === '')
             return;
 
-        let query = {};
-        
-        if($scope.isFacetFilter) {
-            query = {
-                "bool" : {
-                    "must" : {
-                        "query_string" : {
-                            "fields" : ["text"],
-                            "query" : $scope.query
-                        }
-                    },
-                    "filter":{
-                        "terms":{
-                            "categories.keyword": ($scope.isMultiFacetSelect ? $scope.selectedMultiFacets : [$scope.selectedFacetValue])
-                        }
-                    }
-                }
-            };
-        } else {
-            query = {
-                "bool" : {
-                    "must" : {
-                        "query_string" : {
-                            "fields" : ["text"],
-                            "query" : $scope.query
-                        }
-                    },
-                }
-            };
-        }
-
-        $http({
+        let requestObj = {
             method : "POST",
-            url : `https://19d7d779f8a502497d7eed2a5d035771.ap-southeast-2.aws.found.io:9243/wiki/_search`,
             headers: {
                 'Content-Type': 'application/json'
             },
             data: {
                 "from": $scope.from,
                 "size": $scope.size,
-                query,
                 "aggs" : {
                     "index" : {
                         "terms" : { "field" : "_index" }
@@ -189,7 +186,74 @@
                     }
                 },
             }
-        }).then((response) => {
+        }
+
+        if($scope.isMySaves) {
+
+            requestObj.url = `https://19d7d779f8a502497d7eed2a5d035771.ap-southeast-2.aws.found.io:9243/saveddoc/_search`;
+
+            if($scope.isFacetFilter) {
+                requestObj.data.query = {
+                    "bool" : {
+                        "must": {
+                            "match": {
+                                "user": $scope.user
+                            }
+                        },
+                        "filter":{
+                            "terms":{
+                                "categories.keyword": ($scope.isMultiFacetSelect ? $scope.selectedMultiFacets : [$scope.selectedFacetValue])
+                            }
+                        }
+                    }
+                };
+            } else {
+                requestObj.data.query = {
+                    "bool" : {
+                        "must": {
+                            "match": {
+                                "user": $scope.user
+                            }
+                        },
+                    }
+                };
+            }
+        } else {
+
+            requestObj.url = `https://19d7d779f8a502497d7eed2a5d035771.ap-southeast-2.aws.found.io:9243/wiki/_search`;
+
+            if($scope.isFacetFilter) {
+                requestObj.data.query = {
+                    "bool" : {
+                        "must" : {
+                            "query_string" : {
+                                "fields" : ["text"],
+                                "query" : $scope.query
+                            }
+                        },
+                        "filter":{
+                            "terms":{
+                                "categories.keyword": ($scope.isMultiFacetSelect ? $scope.selectedMultiFacets : [$scope.selectedFacetValue])
+                            }
+                        }
+                    }
+                };
+            } else {
+                requestObj.data.query = {
+                    "bool" : {
+                        "must" : {
+                            "query_string" : {
+                                "fields" : ["text"],
+                                "query" : $scope.query
+                            }
+                        },
+                    }
+                };
+            }
+        }
+        
+
+        $http(requestObj).then((response) => {
             
             const searchResult = response.data;
             const { category: categoryData, index } = searchResult.aggregations;
@@ -231,7 +295,10 @@
             $scope.multiFacetsData[val] = false;
         $scope.selectedMultiFacets = [];
 
+        $scope.currentNavItem = 'web';
+        $scope.isMySaves = false;
         $scope.search();
+        
     }
     
     $scope.prevPage = () => {
@@ -244,7 +311,23 @@
     }
 
     $scope.goto = (page) => {
-        console.log("Goto " + page);
+        
+        $scope.from = 0;
+        $scope.isFacetFilter = false;
+        $scope.isMultiFacetSelect = false;
+
+        for(let val in $scope.multiFacetsData)
+            $scope.multiFacetsData[val] = false;
+        $scope.selectedMultiFacets = [];
+
+        if(page === 'mysaves') {
+            $scope.isMySaves = true;
+        }
+        else
+            $scope.isMySaves = false;
+        
+        $scope.search();
+        
     }
 
     $scope.handleClickFacet = (e, facetValue) => {
@@ -262,45 +345,8 @@
         $scope.from = 0;
 
         let query = {};
-
-        if(facetValue === '_all') {
-            query = {
-                "bool":{
-                    "must":{
-                        "query_string" : {
-                            "fields" : ["text"],
-                            "query" : $scope.query
-                        }
-                    },
-                }
-            }
-
-            $scope.isFacetFilter = false;
-        } else {
-            query = {
-                "bool":{
-                    "must":{
-                        "query_string" : {
-                            "fields" : ["text"],
-                            "query" : $scope.query
-                        }
-                    },
-                    "filter":{
-                        "terms":{
-                            "categories.keyword": [
-                                facetValue
-                            ]
-                        }
-                    }
-                }
-            }
-            $scope.isFacetFilter = true;
-            $scope.selectedFacetValue = facetValue;
-        }
-
-        $http({
+        let requestObj = {
             method : "POST",
-            url : `https://19d7d779f8a502497d7eed2a5d035771.ap-southeast-2.aws.found.io:9243/wiki/_search`,
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -309,7 +355,85 @@
                 "size": $scope.size,
                 query
             }
-        }).then((response) => {
+        };
+
+        if($scope.isMySaves) {
+
+            requestObj.url = `https://19d7d779f8a502497d7eed2a5d035771.ap-southeast-2.aws.found.io:9243/saveddoc/_search`
+
+            if(facetValue === '_all') {
+                requestObj.data.query = {
+                    "bool":{
+                        "must": {
+                            "match": {
+                                "user": $scope.user
+                            }
+                        },
+                    }
+                }
+    
+                $scope.isFacetFilter = false;
+            } else {
+                requestObj.data.query = {
+                    "bool":{
+                        "must": {
+                            "match": {
+                                "user": $scope.user
+                            }
+                        },
+                        "filter":{
+                            "terms":{
+                                "categories.keyword": [
+                                    facetValue
+                                ]
+                            }
+                        }
+                    }
+                }
+                $scope.isFacetFilter = true;
+                $scope.selectedFacetValue = facetValue;
+            }
+        } else {
+
+            requestObj.url = `https://19d7d779f8a502497d7eed2a5d035771.ap-southeast-2.aws.found.io:9243/wiki/_search`;
+
+            if(facetValue === '_all') {
+                requestObj.data.query = {
+                    "bool":{
+                        "must":{
+                            "query_string" : {
+                                "fields" : ["text"],
+                                "query" : $scope.query
+                            }
+                        },
+                    }
+                }
+    
+                $scope.isFacetFilter = false;
+            } else {
+                requestObj.data.query = {
+                    "bool":{
+                        "must":{
+                            "query_string" : {
+                                "fields" : ["text"],
+                                "query" : $scope.query
+                            }
+                        },
+                        "filter":{
+                            "terms":{
+                                "categories.keyword": [
+                                    facetValue
+                                ]
+                            }
+                        }
+                    }
+                }
+                $scope.isFacetFilter = true;
+                $scope.selectedFacetValue = facetValue;
+            }
+        }     
+
+        $http(requestObj).then((response) => {
             
             const searchResult = response.data;
             const { hits, total } = searchResult.hits;
@@ -332,6 +456,7 @@
         $scope.isMultiFacetSelect = true;
         $("div.facet-container").find(".facet-option").removeClass('selected');
 
+        $scope.selectedMultiFacets = [];
         for(let val in $scope.multiFacetsData) {
             if($scope.multiFacetsData[val])
                 $scope.selectedMultiFacets.push(val);
@@ -339,52 +464,88 @@
 
         $scope.from = 0;
 
-        let query = {};
-
-        if($scope.selectedMultiFacets.length === 0) {
-            query = {
-                "bool":{
-                    "must":{
-                        "query_string" : {
-                            "fields" : ["text"],
-                            "query" : $scope.query
-                        }
-                    },
-                }
-            }
-
-            $scope.isFacetFilter = false;
-        } else {
-            query = {
-                "bool":{
-                    "must":{
-                        "query_string" : {
-                            "fields" : ["text"],
-                            "query" : $scope.query
-                        }
-                    },
-                    "filter":{
-                        "terms":{
-                            "categories.keyword": $scope.selectedMultiFacets
-                        }
-                    }
-                }
-            }
-            $scope.isFacetFilter = true;
-        }
-
-        $http({
+        let requestObj = {
             method : "POST",
-            url : `https://19d7d779f8a502497d7eed2a5d035771.ap-southeast-2.aws.found.io:9243/wiki/_search`,
             headers: {
                 'Content-Type': 'application/json'
             },
             data: {
                 "from": $scope.from,
                 "size": $scope.size,
-                query
             }
-        }).then((response) => {
+        };
+
+        if($scope.isMySaves) {
+
+            requestObj.url = `https://19d7d779f8a502497d7eed2a5d035771.ap-southeast-2.aws.found.io:9243/saveddoc/_search`;
+
+            if($scope.selectedMultiFacets.length === 0) {
+                requestObj.data.query = {
+                    "bool":{
+                        "must": {
+                            "match": {
+                                "user": $scope.user
+                            }
+                        },
+                    }
+                }
+    
+                $scope.isFacetFilter = false;
+            } else {
+                requestObj.data.query = {
+                    "bool":{
+                        "must": {
+                            "match": {
+                                "user": $scope.user
+                            }
+                        },
+                        "filter":{
+                            "terms":{
+                                "categories.keyword": $scope.selectedMultiFacets
+                            }
+                        }
+                    }
+                }
+                $scope.isFacetFilter = true;
+            }
+        } else {
+
+            requestObj.url = `https://19d7d779f8a502497d7eed2a5d035771.ap-southeast-2.aws.found.io:9243/wiki/_search`;
+
+            if($scope.selectedMultiFacets.length === 0) {
+                requestObj.data.query = {
+                    "bool":{
+                        "must":{
+                            "query_string" : {
+                                "fields" : ["text"],
+                                "query" : $scope.query
+                            }
+                        },
+                    }
+                }
+    
+                $scope.isFacetFilter = false;
+            } else {
+                requestObj.data.query = {
+                    "bool":{
+                        "must":{
+                            "query_string" : {
+                                "fields" : ["text"],
+                                "query" : $scope.query
+                            }
+                        },
+                        "filter":{
+                            "terms":{
+                                "categories.keyword": $scope.selectedMultiFacets
+                            }
+                        }
+                    }
+                }
+                $scope.isFacetFilter = true;
+            }
+        }
+
+        $http(requestObj).then((response) => {
             
             const searchResult = response.data;
             const { hits, total } = searchResult.hits;
