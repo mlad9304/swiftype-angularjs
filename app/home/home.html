@@ -14,15 +14,88 @@
         <div class="global-search__header" id="searchHeader">
             <div class="header-wrapper">
                 <div class="header-right-tool">
-                    <div class="btn_menu_vis"></div>
-                    <nav class="header_menu">
-                        <div>
-                            <a>About</a>
-                        </div>
-                        <div>
-                            <a>Get in Touch</a>
-                        </div>
-                    </nav>
+                    <div class="btn-menu-header">
+                        <md-menu ng-if="vm.auth.isAuthenticated()">
+                            <md-button class="md-fab md-mini" ng-click="openMenu($mdMenu, $event)">
+                                <i class="fa fa-bars">
+                                </i>
+                            </md-button>
+                            <md-menu-content width="4">
+                                <md-menu-item>
+                                    <md-button>
+                                        Saved Searches
+                                    </md-button>
+                                </md-menu-item>
+                                <md-menu-item>
+                                    <md-button ng-click="goto('mysaves')">
+                                        Saved Results
+                                    </md-button>
+                                </md-menu-item>
+                                <md-menu-divider></md-menu-divider>
+                                <md-menu-item>
+                                    <md-button ng-click="profile()">
+                                        <i class="fa fa-user"></i>
+                                        Profile
+                                    </md-button>
+                                </md-menu-item>
+                                <md-menu-item>
+                                    <md-button ng-click="logout()">
+                                        <i class="fa fa-sign-out"></i>
+                                        Log Out
+                                    </md-button>
+                                </md-menu-item>
+                            </md-menu-content>
+                        </md-menu>
+                        <md-menu ng-if="!vm.auth.isAuthenticated()">
+                            <md-button class="md-fab md-mini" ng-click="openMenu($mdMenu, $event)">
+                                <i class="material-icons">
+                                    perm_identity
+                                </i>
+                            </md-button>
+                            <md-menu-content width="4">
+                                <md-menu-item>
+                                    <md-button ng-click="vm.auth.login()">
+                                        <i class="material-icons" style="top: 8px; position: relative;">
+                                            perm_identity
+                                        </i> Sign In 
+                                    </md-button>
+                                </md-menu-item>
+                                
+                            </md-menu-content>
+                        </md-menu>
+                    </div>
+                    <div class="auth" ng-init="onInit()">
+                        <md-button ng-if="!vm.auth.isAuthenticated()" class="login-button" ng-click="vm.auth.login()">
+                            Sign In <i class="material-icons">
+                                    perm_identity
+                                </i>
+                        </md-button>
+                        <md-menu ng-if="vm.auth.isAuthenticated()" class="profile-menu">
+                                
+                            <md-button ng-click="openMenu($mdMenu, $event)">
+                                {{nickname}} <i class="material-icons">
+                                    perm_identity
+                                </i>
+                            </md-button>
+                            
+                            <md-menu-content width="4">
+                                <md-menu-item>
+                                    <md-button ng-click="profile()">
+                                        <i class="fa fa-user"></i>
+                                        Profile
+                                    </md-button>
+                                </md-menu-item>
+                                <md-menu-divider></md-menu-divider>
+                                <md-menu-item>
+                                    <md-button ng-click="logout()">
+                                        <i class="fa fa-sign-out"></i>
+                                        Log Out
+                                    </md-button>
+                                </md-menu-item>
+                                
+                            </md-menu-content>
+                        </md-menu>
+                    </div>
                 </div>
                 <div class="logo-wrapper">
                     <div class="logo">
@@ -51,45 +124,20 @@
                             <md-nav-item md-nav-click="goto('images')" name="images">
                                 Images
                             </md-nav-item>
-                            <div style="margin:15px 30px 0" ng-if="isLogged"> | </div>
-                            <md-nav-item md-nav-click="goto('mysaves')" name="mysaves" ng-if="isLogged">
-                                My saves
-                            </md-nav-item>
                         </md-nav-bar>
-                        
+                        <ul class="mysaves-wrapper" ng-if="isLogged">
+                            <li>
+                                <span>|</span>
+                            </li>
+                            <li>
+                                <md-button>Saved Searches</md-button>
+                            </li>
+                            <li>
+                                <md-button ng-click="goto('mysaves')">Saved Results</md-button>
+                            </li>
+                        </ul>
                     </form>
                     
-                </div>
-                
-                <div class="auth-wrapper">
-                        
-                    <div class="auth" ng-init="onInit()">
-                        <!-- <md-button ng-if="!vm.auth.isAuthenticated()" class="md-raised login-button" ng-click="vm.auth.login()">Login</md-button> -->
-                        <md-menu ng-if="vm.auth.isAuthenticated()" class="profile-menu">
-                                
-                            <md-button ng-click="openMenu($mdMenu, $event)">
-                                <i class="fa fa-user"></i>
-                                {{nickname}}
-                            </md-button>
-                            
-                            <md-menu-content width="4">
-                                <md-menu-item>
-                                    <md-button ng-click="profile()">
-                                        <i class="fa fa-user"></i>
-                                        Profile
-                                    </md-button>
-                                </md-menu-item>
-                                <md-menu-divider></md-menu-divider>
-                                <md-menu-item>
-                                    <md-button ng-click="logout()">
-                                        <i class="fa fa-sign-out"></i>
-                                        Log Out
-                                    </md-button>
-                                </md-menu-item>
-                                
-                            </md-menu-content>
-                        </md-menu>
-                    </div>
                 </div>
                 
             </div>
