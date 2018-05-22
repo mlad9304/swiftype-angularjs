@@ -22,12 +22,12 @@
                             </md-button>
                             <md-menu-content width="4">
                                 <md-menu-item>
-                                    <md-button>
+                                    <md-button ng-click="goto('savedsearches')">
                                         Saved Searches
                                     </md-button>
                                 </md-menu-item>
                                 <md-menu-item>
-                                    <md-button ng-click="goto('mysaves')">
+                                    <md-button ng-click="goto('savedresults')">
                                         Saved Results
                                     </md-button>
                                 </md-menu-item>
@@ -107,7 +107,7 @@
                         
                         <md-input-container class="md-block" flex-gt-sm>
                             <label>Search</label>
-                            <input ng-model="$parent.query" ng-change="handleChangeQuery()">
+                            <input ng-model="query" ng-change="handleChangeQuery()">
                             
                         </md-input-container>
                         <svg class="icon">
@@ -124,25 +124,21 @@
                             <md-nav-item md-nav-click="goto('images')" name="images">
                                 Images
                             </md-nav-item>
+                            <div class="saved navbar-spacer" ng-if="isLogged">|</div>
+                            <md-nav-item class="saved" md-nav-click="goto('savedsearches')" name="savedsearches" ng-if="isLogged">
+                                Saved Searches
+                            </md-nav-item>
+                            <md-nav-item class="saved" md-nav-click="goto('savedresults')" name="savedresults" ng-if="isLogged">
+                                Saved Results
+                            </md-nav-item>
                         </md-nav-bar>
-                        <ul class="mysaves-wrapper" ng-if="isLogged">
-                            <li>
-                                <span>|</span>
-                            </li>
-                            <li>
-                                <md-button>Saved Searches</md-button>
-                            </li>
-                            <li>
-                                <md-button ng-click="goto('mysaves')">Saved Results</md-button>
-                            </li>
-                        </ul>
                     </form>
                     
                 </div>
                 
             </div>
         </div>
-        <div class="search-ui-container">
+        <div class="search-ui-container" ng-if="!isMySavedSearches">
             <i class="s-sidebar__trigger material-icons md-48">
                 filter_list
             </i>
@@ -189,6 +185,16 @@
                         <div class="search-summary-label" ng-if="!isMySaves">
                             Showing results <strong ng-bind="page_row_count_summary"></strong> of <strong ng-bind="total"></strong> for <em ng-bind="query"></em>
                         </div>
+                        <span class="saved_searches" ng-if="isLogged && !isMySaves">
+                            <i class="material-icons" ng-click="onSaveSearches($event)" ng-if="!isSavedSearches">
+                                save_alt
+                            </i>
+                            <span ng-if="isSavedSearches">
+                                <i class="material-icons">
+                                    check
+                                </i> <span style="position: relative; top: -8px;">saved</span>
+                            </span>
+                        </span>
                         <div class="filter-label-container" ng-if="!isMultiFacetSelect">
                             <span class="filter-label" ng-if="isFacetFilter"><span><strong>Category:</strong> {{selectedFacetValue}}</span></span>
                         </div>
@@ -270,6 +276,45 @@
             </div>
             
         </div>
+
+
+        <div class="search-ui-container" ng-if="isMySavedSearches">
+            
+            <div class="results-container">
+                <div ng-if="isNotEmptyRecords_savedsearches" class="search-summary">
+                    <div class="search-summary-label">
+                        Saved searches <strong ng-bind="page_row_count_summary_savedsearches"></strong> of <strong ng-bind="total_savedsearches"></strong>
+                    </div>
+                </div>
+                <ul style="padding-left: 0">
+                    <li ng-repeat="record in hits_savedsearches" class="result" style="padding: 1rem; position: relative; list-style-type: none;">
+                        <div class="result-title">
+                            {{record._source.query}}
+                        </div>
+                        <div class="result-description pt-1 h-inherit" style="border-left: 1px solid #DAE2EB; padding-left: 8px; height: 40px">
+                            <div class="filter-label-container">
+                                <span ng-repeat="category in record._source.categories" class="filter-label"><span><strong>Category:</strong> {{category}}</span></span>
+                            </div>
+                        </div>
+                        
+                        <div class="save-button-container" ng-click="viewSearches(record)" ng-if="isLogged" style="bottom: 10px !important;right: 50px;">
+                                <i class="save-button material-icons">visibility</i>
+                            </div>
+                        <div class="save-button-container" ng-click="removeSearches(record)" ng-if="isLogged" style="bottom: 10px !important;">
+                            <i class="save-button fa fa-trash"></i>
+                        </div>                        
+                        
+                    </li>
+                </ul>
+                <div ng-if="isNotEmptyRecords_savedsearches" class="pagination" style="display: block;">
+                    <span class="previous_page" ng-class="{disabled: isInvalidPrevPage_savedsearches}" ng-click="prevPageSavedsearches()">Previous</span>
+                    <span class="next_page" ng-class="{disabled: isInvalidNextPage_savedsearches}" ng-click="nextPageSavedsearches()">Next</span>
+                </div>
+            </div>
+            
+        </div>
+
+
     </div>
 </div>
 

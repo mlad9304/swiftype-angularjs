@@ -37,10 +37,6 @@
     
 }
 
-
-
-
-
 .logo-wrapper {
     width: 160px;
     height: 100%;
@@ -175,29 +171,54 @@ md-nav-bar md-nav-ink-bar {
     font-weight: 700;
 }
 
-
-.mysaves-wrapper {
-    list-style-type: none;
-    margin: 0 10px 0 0;
-    padding: 0;
-    position: absolute;
-    bottom: 0;
-    right: 120px;
+.navbar-spacer {
+    position: relative;
+    top: 14px;
+    margin-left: 470px;
+    margin-right: 30px;
 }
-.mysaves-wrapper > li {
-    display: inline;
-    padding-left: 20px;
+.saved {
+    display: block;
 }
-@media (max-width: 850px){
-    .mysaves-wrapper {
-        display: block;
-        right: 0;
+@media (min-width: 740px){
+    .navbar-spacer {
+        margin-left: 40px;
     }
 }
+@media (min-width: 850px){
+    .navbar-spacer {
+        margin-left: 140px;
+    }
+}
+@media (min-width: 1000px){
+    .navbar-spacer {
+        margin-left: 170px;
+    }
+}
+@media (min-width: 1200px){
+    .navbar-spacer {
+        margin-left: 370px;
+    }
+}
+@media (min-width: 1400px){
+    .navbar-spacer {
+        margin-left: 466px;
+    }
+}
+
 @media (max-width: 600px){
-    .mysaves-wrapper {
+    .saved {
         display: none;
     }
+}
+
+.saved_searches {
+    position: relative;
+    top: -3px;
+    left: 20px;
+    float: left;
+    padding-right: 25px;
+    cursor: pointer;
 }
 
 
@@ -405,11 +426,11 @@ md-checkbox.md-checked.blue .md-icon {
     padding-top: 2px;
     padding-bottom: 10px;
 }
-.search-summary .filter-label-container {
+.filter-label-container {
     position:relative;
     float:left;
 }
-.search-summary .filter-label{
+.filter-label{
     text-transform:uppercase;
     font-size:11px;
     border:1px solid #ccc;
@@ -420,7 +441,7 @@ md-checkbox.md-checked.blue .md-icon {
     float:left;
     margin-bottom: 4px;
 }
-.search-summary .filter-label span {
+.filter-label span {
     display:ruby;
 }
 

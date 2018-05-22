@@ -15,8 +15,24 @@
 
   function homeController(authService, $scope, $http, $mdDialog, $rootScope) {
 
+    $scope.from = 0;
+    $scope.size = 12;
+    $scope.categorySize = 5;
+    $scope.isSavedSearches = false;
+
+    $scope.isFacetFilter = false;
+    $scope.isMultiFacetSelect = false;
+    $scope.multiFacetsData = {};
+    $scope.selectedMultiFacets = [];
+    $scope.nickname = "";
+
+    $scope.currentNavItem = 'web';
+
     var vm = this;
     vm.auth = authService;
+
+    $scope.from_savedsearches = 0;
+    $scope.size_savedsearches = 12;
 
     $scope.$watch(function(){
         return $rootScope.g_bIsAuth;
@@ -144,23 +160,11 @@
          });
       };
 
-    $scope.from = 0;
-    $scope.size = 12;
-    $scope.categorySize = 5;
-
-    $scope.isFacetFilter = false;
-    $scope.isMultiFacetSelect = false;
-    $scope.multiFacetsData = {};
-    $scope.selectedMultiFacets = [];
-    $scope.nickname = "";
-
-    $scope.currentNavItem = 'web';
-
-    var originatorEv;
+    
 
     
 
-    $scope.search = (isReplaceReturnedFacets=true) => {
+    $scope.search = (isReplaceReturnedFacets=true, callback=null) => {
         console.log($scope.query);
         if($scope.query === '')
             return;
@@ -277,7 +281,8 @@
             $scope.isInvalidPrevPage = $scope.from <= 0;
             $scope.isInvalidNextPage = ($scope.from + $scope.hits.length) >= $scope.total;
 
-            
+            if(callback)
+                callback();
 
         },(error) => {
             console.log(error.statusText);
@@ -290,6 +295,8 @@
         $scope.from = 0;
         $scope.isFacetFilter = false;
         $scope.isMultiFacetSelect = false;
+        $scope.isSavedSearches = false;
+        
 
         for(let val in $scope.multiFacetsData)
             $scope.multiFacetsData[val] = false;
@@ -297,6 +304,7 @@
 
         $scope.currentNavItem = 'web';
         $scope.isMySaves = false;
+        $scope.isMySavedSearches = false;
         $scope.search();
         
     }
@@ -315,16 +323,26 @@
         $scope.from = 0;
         $scope.isFacetFilter = false;
         $scope.isMultiFacetSelect = false;
+        $scope.isSavedSearches = false;
 
         for(let val in $scope.multiFacetsData)
             $scope.multiFacetsData[val] = false;
         $scope.selectedMultiFacets = [];
 
-        if(page === 'mysaves') {
+        $scope.from_savedsearches = 0;
+
+        if(page === 'savedresults') {
             $scope.isMySaves = true;
-        }
-        else
+        } else
             $scope.isMySaves = false;
+
+        if(page === 'savedsearches') {
+            $scope.isMySavedSearches = true;
+            $scope.searchSavedSearches();
+            return;
+        } else {
+            $scope.isMySavedSearches = false;
+        }
         
         $scope.search();
         
@@ -335,14 +353,15 @@
         $scope.isMultiFacetSelect = false;
         for(let val in $scope.multiFacetsData) {
             $scope.multiFacetsData[val] = false;
-            $scope.selectedMultiFacets = [];
         }
+        $scope.selectedMultiFacets = [];
 
         $(e.target).parents(".facets").find('.facet-option').removeClass('selected');
         let el = angular.element(e.target.parentElement);
         el.addClass('selected');
         
         $scope.from = 0;
+        $scope.isSavedSearches = false;
 
         let query = {};
         let requestObj = {
@@ -373,6 +392,7 @@
                 }
     
                 $scope.isFacetFilter = false;
+                $scope.selectedFacetValue = '';
             } else {
                 requestObj.data.query = {
                     "bool":{
@@ -463,6 +483,7 @@
         }
 
         $scope.from = 0;
+        $scope.isSavedSearches = false;
 
         let requestObj = {
             method : "POST",
@@ -563,6 +584,169 @@
         });
     }
 
+    $scope.onSaveSearches = (e) => {
+        let categories = [];
+        if($scope.isMultiFacetSelect) {
+            for(let facetValue in $scope.multiFacetsData) {
+                if($scope.multiFacetsData[facetValue])
+                    categories.push(facetValue);
+            }
+        }
+        else {
+            console.log("aaa", $scope.selectedFacetValue);
+            if($scope.selectedFacetValue !== undefined && $scope.selectedFacetValue !== '')
+                categories.push($scope.selectedFacetValue);
+        }
+
+        $http({
+            method : "POST",
+            url : `https://19d7d779f8a502497d7eed2a5d035771.ap-southeast-2.aws.found.io:9243/savedsearch/_doc`,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            data: {
+                "user": $scope.user,
+                "date_created": new Date().toJSON(),
+                "query": $scope.query,
+                "categories": categories,
+                "is_multi_facet_select": $scope.isMultiFacetSelect
+            }
+        }).then((response) => {
+            $scope.isSavedSearches = true;
+
+            
+        },(error) => {
+            console.log(error.statusText);
+        });
+
+    }
+
+    $scope.searchSavedSearches = () => {
+
+        $http({
+            method : "POST",
+            url : `https://19d7d779f8a502497d7eed2a5d035771.ap-southeast-2.aws.found.io:9243/savedsearch/_search`,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            data: {
+                "from": $scope.from_savedsearches,
+                "size": $scope.size_savedsearches,
+                "query": {
+                    "bool":{
+                        "must": {
+                            "match": {
+                                "user": $scope.user
+                            }
+                        },
+                    }
+                }
+            }
+        }).then((response) => {
+
+            const searchResult = response.data;
+            const { hits, total } = searchResult.hits;
+
+            $scope.hits_savedsearches = hits;
+            $scope.total_savedsearches = total;
+
+            $scope.isNotEmptyRecords_savedsearches = $scope.total_savedsearches > 0;
+            $scope.page_row_count_summary_savedsearches = ($scope.from_savedsearches + 1) + '-' + ($scope.from_savedsearches + $scope.hits_savedsearches.length);
+            $scope.isInvalidPrevPage_savedsearches = $scope.from_savedsearches <= 0;
+            $scope.isInvalidNextPage_savedsearches = ($scope.from_savedsearches + $scope.hits_savedsearches.length) >= $scope.total_savedsearches;
+            
+        },(error) => {
+            console.log(error.statusText);
+        });
+    }
+
+    $scope.prevPageSavedsearches = () => {
+        $scope.from_savedsearches -= $scope.size_savedsearches;
+        $scope.searchSavedSearches();
+    }
+    $scope.nextPageSavedsearches = () => {
+        $scope.from_savedsearches += $scope.size_savedsearches;
+        $scope.searchSavedSearches();
+    }
+
+    $scope.viewSearches = (item) => {
+
+        $scope.query = item._source.query;
+        $rootScope.query = item._source.query;
+
+        $scope.isMultiFacetSelect = item._source.is_multi_facet_select;
+
+        $scope.from = 0;
+        $scope.isFacetFilter = item._source.categories.length === 0 ? false : true;
+        $scope.isMultiFacetSelect = item._source.is_multi_facet_select;
+        $scope.isSavedSearches = false;
+
+        if($scope.isFacetFilter) {
+            if($scope.isMultiFacetSelect) {
+                $scope.selectedMultiFacets = item._source.categories;
+            } else {
+                $scope.selectedFacetValue = item._source.categories[0];
+            }
+        } else {
+            $scope.selectedFacetValue = "";
+            $scope.multiFacetsData = {};
+            $scope.selectedMultiFacets = [];
+        }
+
+        $scope.currentNavItem = 'web';
+        $scope.isMySaves = false;
+
+        $scope.isMySavedSearches = false;
+
+        $scope.search(true, () => {
+            $scope.multiFacetsData = {};
+
+            if($scope.isFacetFilter) {
+                if($scope.isMultiFacetSelect) {
+                    for(let val in $scope.selectedMultiFacets)
+                        $scope.multiFacetsData[$scope.selectedMultiFacets[val]] = true;
+
+                    $("div.facet-container").find(".facet-option").removeClass('selected');
+                } else {
+                    if($scope.selectedFacetValue !== undefined && $scope.selectedFacetValue !== '') {
+                        
+                        let i;
+                        for(i=0; i<$scope.categories.length; i++) {
+                            if($scope.categories[i].key == $scope.selectedFacetValue)
+                                break;
+                        }
+                        
+                        setTimeout(() => {
+                            $("div.facet-container").find(".facet-option").removeClass('selected');
+                            $('div.facet-container:first .facet-option').eq(i+1).addClass('selected');
+                        }, 100);
+                    }
+                }
+            }
+        });
+
+    }
+    $scope.removeSearches = (item) => {
+
+        $http({
+            method : "DELETE",
+            url : `https://19d7d779f8a502497d7eed2a5d035771.ap-southeast-2.aws.found.io:9243/savedsearch/_doc/${item._id}`,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        }).then((response) => {
+            
+            for(let i=0; i<$scope.hits_savedsearches.length; i++) {
+                if(response.data._id === $scope.hits_savedsearches[i]._id) {
+                    $scope.hits_savedsearches.splice(i, 1);
+                    break;
+                }
+            }
+        },(error) => {
+            console.log(error.statusText);
+        });
+    }
+
     $('body').on('click', function(e) {
         
         if ($(".btn_menu_vis").is(e.target)) {
@@ -575,9 +759,13 @@
             $(".s-sidebar__trigger").toggleClass('active');
         } else {
             var element = document.getElementsByClassName("facets")[0];
-            if(e.target !== element && !element.contains(e.target)){
-                $(".s-sidebar__trigger").removeClass('active');
+            
+            if(element !== undefined) {
+                if(e.target !== element && !element.contains(e.target)){
+                    $(".s-sidebar__trigger").removeClass('active');
+                }
             }
+            
         }
     });
 
