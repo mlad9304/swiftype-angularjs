@@ -50,6 +50,8 @@
             $scope.user = profile.sub.substr(6);
             $scope.isLogged = true;
             $scope.$apply();
+
+            console.log(profile);
         });
     }    
 
