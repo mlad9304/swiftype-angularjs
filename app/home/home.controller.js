@@ -64,7 +64,7 @@
         
         $http({
             method : "POST",
-            url : `https://19d7d779f8a502497d7eed2a5d035771.ap-southeast-2.aws.found.io:9243/saveddoc/_doc`,
+            url : `${SERVER_URL}/saveddoc/_doc`,
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -87,7 +87,7 @@
 
         $http({
             method : "DELETE",
-            url : `https://19d7d779f8a502497d7eed2a5d035771.ap-southeast-2.aws.found.io:9243/saveddoc/_doc/${item._id}`,
+            url : `${SERVER_URL}/saveddoc/_doc/${item._id}`,
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -196,7 +196,7 @@
 
         if($scope.isMySaves) {
 
-            requestObj.url = `https://19d7d779f8a502497d7eed2a5d035771.ap-southeast-2.aws.found.io:9243/saveddoc/_search`;
+            requestObj.url = `${SERVER_URL}/saveddoc/_search`;
 
             if($scope.isFacetFilter) {
                 requestObj.data.query = {
@@ -226,7 +226,7 @@
             }
         } else {
 
-            requestObj.url = `https://19d7d779f8a502497d7eed2a5d035771.ap-southeast-2.aws.found.io:9243/wiki/_search`;
+            requestObj.url = `${SERVER_URL}/wiki/_search`;
 
             if($scope.isFacetFilter) {
                 requestObj.data.query = {
@@ -380,7 +380,7 @@
 
         if($scope.isMySaves) {
 
-            requestObj.url = `https://19d7d779f8a502497d7eed2a5d035771.ap-southeast-2.aws.found.io:9243/saveddoc/_search`
+            requestObj.url = `${SERVER_URL}/saveddoc/_search`
 
             if(facetValue === '_all') {
                 requestObj.data.query = {
@@ -417,7 +417,7 @@
             }
         } else {
 
-            requestObj.url = `https://19d7d779f8a502497d7eed2a5d035771.ap-southeast-2.aws.found.io:9243/wiki/_search`;
+            requestObj.url = `${SERVER_URL}/wiki/_search`;
 
             if(facetValue === '_all') {
                 requestObj.data.query = {
@@ -500,7 +500,7 @@
 
         if($scope.isMySaves) {
 
-            requestObj.url = `https://19d7d779f8a502497d7eed2a5d035771.ap-southeast-2.aws.found.io:9243/saveddoc/_search`;
+            requestObj.url = `${SERVER_URL}/saveddoc/_search`;
 
             if($scope.selectedMultiFacets.length === 0) {
                 requestObj.data.query = {
@@ -533,7 +533,7 @@
             }
         } else {
 
-            requestObj.url = `https://19d7d779f8a502497d7eed2a5d035771.ap-southeast-2.aws.found.io:9243/wiki/_search`;
+            requestObj.url = `${SERVER_URL}/wiki/_search`;
 
             if($scope.selectedMultiFacets.length === 0) {
                 requestObj.data.query = {
@@ -602,7 +602,7 @@
 
         $http({
             method : "POST",
-            url : `https://19d7d779f8a502497d7eed2a5d035771.ap-southeast-2.aws.found.io:9243/savedsearch/_doc`,
+            url : `${SERVER_URL}/savedsearch/_doc`,
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -627,7 +627,7 @@
 
         $http({
             method : "POST",
-            url : `https://19d7d779f8a502497d7eed2a5d035771.ap-southeast-2.aws.found.io:9243/savedsearch/_search`,
+            url : `${SERVER_URL}/savedsearch/_search`,
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -732,7 +732,7 @@
 
         $http({
             method : "DELETE",
-            url : `https://19d7d779f8a502497d7eed2a5d035771.ap-southeast-2.aws.found.io:9243/savedsearch/_doc/${item._id}`,
+            url : `${SERVER_URL}/savedsearch/_doc/${item._id}`,
             headers: {
                 'Content-Type': 'application/json'
             },
