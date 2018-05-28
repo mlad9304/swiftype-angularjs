@@ -51,7 +51,6 @@
             $scope.isLogged = true;
             $scope.$apply();
 
-            console.log(profile);
         });
     }    
 
@@ -595,7 +594,6 @@
             }
         }
         else {
-            console.log("aaa", $scope.selectedFacetValue);
             if($scope.selectedFacetValue !== undefined && $scope.selectedFacetValue !== '')
                 categories.push($scope.selectedFacetValue);
         }
@@ -764,6 +762,14 @@
             
             if(element !== undefined) {
                 if(e.target !== element && !element.contains(e.target)){
+                    $(".s-sidebar__trigger").removeClass('active');
+                }
+            }
+
+            var element = document.getElementsByClassName("close-facets")[0];
+
+            if(element !== undefined) {
+                if(element.contains(e.target)){
                     $(".s-sidebar__trigger").removeClass('active');
                 }
             }

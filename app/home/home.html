@@ -110,9 +110,9 @@
                             <input ng-model="query" ng-change="handleChangeQuery()">
                             
                         </md-input-container>
-                        <svg class="icon">
+                        <!-- <svg class="icon">
                             <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-small-search"></use>
-                        </svg>
+                        </svg> -->
                         <md-nav-bar
                             class="global-navbar"
                             md-no-ink-bar="disableInkBar"
@@ -143,6 +143,11 @@
                 filter_list
             </i>
             <div class="facets">
+                <div class="close-facets">
+                    <i class="material-icons md-28">
+                        keyboard_arrow_left
+                    </i>
+                </div>
                 <div class="facet-container" ng-if="isNotEmptyRecords">
                     <div class="facet-header">
                         <span>Categories</span>
@@ -211,7 +216,7 @@
                             <div class="result-title">
                                 {{record._source.title}}
                             </div>
-                            <div class="result-description" style="border-left: 1px solid #DAE2EB; padding-left: 8px; height: 40px">
+                            <div class="result-description mt-10 mb-0" style="border-left: 1px solid #DAE2EB; padding-left: 8px; height: 40px">
                                 <p ng-bind-html="record._source.text | trustAsHtml"></p>
                             </div>
                             <div class="save-button-container" ng-click="removeResult(record)" ng-if="isLogged && isMySaves" style="bottom: 10px !important;">
@@ -238,15 +243,11 @@
                         md-cols-sm="2"
                         md-cols-gt-sm="2"
                         md-cols-gt-md="3"
-                        md-row-height-xs="4:5"
-                        md-row-height-gt-xs="4:5"
-                        md-row-height-sm="4:5"
-                        md-row-height-gt-sm="4:5"
-                        md-row-height-md="400px"
-                        md-row-height-gt-md="400px"
-                        md-gutter="12px" md-gutter-gt-sm="8px">
+                        md-row-height-xs="4:4.3"
+                        md-row-height-gt-xs="340px"
+                        md-gutter="12px" md-gutter-gt-sm="20px">
                         <md-grid-tile ng-repeat="record in hits">
-                            <md-card class="result">
+                            <md-card class="result" layout-fill>
                                 <img ng-src="assets/images/back.jpg" class="md-card-image" alt="Washed Out">
                                 <md-card-title class="result-title">
                                     <md-card-title-text>
@@ -291,7 +292,7 @@
                         <div class="result-title">
                             {{record._source.query}}
                         </div>
-                        <div class="result-description pt-1 h-inherit" style="border-left: 1px solid #DAE2EB; padding-left: 8px; height: 40px">
+                        <div class="result-description pt-4 h-inherit mt-10 mb-0" style="border-left: 1px solid #DAE2EB; padding-left: 8px; height: 40px">
                             <div class="filter-label-container">
                                 <span ng-repeat="category in record._source.categories" class="filter-label"><span><strong>Category:</strong> {{category}}</span></span>
                             </div>
