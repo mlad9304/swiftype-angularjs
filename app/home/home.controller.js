@@ -37,20 +37,17 @@
     $scope.$watch(function(){
         return $rootScope.g_bIsAuth;
     }, function(newVal, oldVal){
-        //do something with values
         if (newVal == true) getProfile();
     }) 
 
 
     const getProfile = () => {
         authService.getProfile(function(err, profile) {
-            // vm.profile = profile;
             $scope.nickname = profile.nickname;
             $scope.email = profile.name;
             $scope.user = profile.sub.substr(6);
             $scope.isLogged = true;
             $scope.$apply();
-
         });
     }    
 
@@ -124,9 +121,6 @@
               '<md-toolbar>' +
                 '<div class="md-toolbar-tools">' +
                     '<h2>Profile</h2>' +
-                    // '<md-button class="md-icon-button" ng-click="cancel()">' +
-                    // '<md-icon md-svg-src="img/icons/ic_close_24px.svg" aria-label="Close dialog"></md-icon>' +
-                    // '</md-button>' +
                 '</div>' +
               '</md-toolbar>' +
               '  <md-dialog-content>'+
@@ -160,10 +154,6 @@
             }
          });
       };
-
-    
-
-    
 
     $scope.search = (isReplaceReturnedFacets=true, callback=null) => {
         console.log($scope.query);
@@ -256,7 +246,6 @@
                 };
             }
         }
-        
 
         $http(requestObj).then((response) => {
             
@@ -776,7 +765,6 @@
             
         }
     });
-
     
   }
 

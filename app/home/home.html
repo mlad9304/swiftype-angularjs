@@ -1,12 +1,4 @@
 <div class="global-container">
-    <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-        <defs>
-            <symbol id="icon-small-search" viewBox="0 0 1024 1024">
-                <title>search</title>
-                <path class="path1" d="M848.471 928l-263.059-263.059c-48.941 36.706-110.118 55.059-177.412 55.059-171.294 0-312-140.706-312-312s140.706-312 312-312c171.294 0 312 140.706 312 312 0 67.294-24.471 128.471-55.059 177.412l263.059 263.059-79.529 79.529zM189.623 408.078c0 121.364 97.091 218.455 218.455 218.455s218.455-97.091 218.455-218.455c0-121.364-103.159-218.455-218.455-218.455-121.364 0-218.455 97.091-218.455 218.455z"></path>
-            </symbol>
-        </defs>
-    </svg>
     <div class="global-search">
         <div class="top-banner">
             <span class="top-banner-title">development</span>
@@ -17,8 +9,7 @@
                     <div class="btn-menu-header">
                         <md-menu ng-if="vm.auth.isAuthenticated()">
                             <md-button class="md-fab md-mini" ng-click="openMenu($mdMenu, $event)">
-                                <i class="fa fa-bars">
-                                </i>
+                                <i class="fa fa-bars"></i>
                             </md-button>
                             <md-menu-content width="4">
                                 <md-menu-item>
@@ -110,9 +101,6 @@
                             <input ng-model="query" ng-change="handleChangeQuery()">
                             
                         </md-input-container>
-                        <!-- <svg class="icon">
-                            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-small-search"></use>
-                        </svg> -->
                         <md-nav-bar
                             class="global-navbar"
                             md-no-ink-bar="disableInkBar"
@@ -139,8 +127,8 @@
             </div>
         </div>
         <div class="search-ui-container" ng-if="!isMySavedSearches">
-            <i class="s-sidebar__trigger material-icons md-48">
-                filter_list
+            <i class="s-sidebar__trigger material-icons md-28">
+                keyboard_arrow_right
             </i>
             <div class="facets">
                 <div class="close-facets">
